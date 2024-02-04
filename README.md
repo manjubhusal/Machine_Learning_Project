@@ -9,11 +9,23 @@ Currently, this README is meant for developer use only.
 We will be utilizing the following:
 - Python version 3.12.1
 - Pycharm 2022.2.5 (Community Edition)
+- Pandas 2.2.0 (install/add on Pycharm)
+- Numpy 1.26.3 (install/add on Pycharm)
+- Scipy 1.12.0 (install/add on Pycharm)
 
-Clone the project repo using the lobogit repo URL (ssh/https).
+**To install or add packages on Pycharm**, go to Pycharm's
+settings and type in "interpreter"; select "python interpreter"
+which should show you a list of your currently added python packages.
+Here you can install any packages your missing. Some packages may already 
+installed and only need to be added.
+
+
+**Clone the project repo** using the lobogit repo URL (ssh/https).
 Remember to always pull before pushing anything to prevent version 
 conflicts & please add a commit message to all commits.
 
+***If you have any issues setting up the environment, please DM 
+me on discord. - Ester***
 ## Tools we are allowed to use:
 - Pandas library to deal with our data
 - train_test_split or other data split methods from skleanr.model_selection
