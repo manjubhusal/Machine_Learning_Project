@@ -7,11 +7,12 @@ Currently, this README is meant for developer use only.
 ***
 ## How to set up the project locally
 We will be utilizing the following:
-- Python version 3.12.1
+- Python 3.12.1
 - Pycharm 2022.2.5 (Community Edition)
 - Pandas 2.2.0 (install/add on Pycharm)
 - Numpy 1.26.3 (install/add on Pycharm)
 - Scipy 1.12.0 (install/add on Pycharm)
+- scikit-learn 1.4.0 (install/add on Pycharm)
 
 **To install or add packages on Pycharm**, go to Pycharm's
 settings and type in "interpreter"; select "python interpreter"
@@ -29,6 +30,8 @@ me on discord. - Ester***
 ## Tools we are allowed to use:
 - Pandas library to deal with our data
 - train_test_split or other data split methods from skleanr.model_selection
+  (**we will be using scikit-learn** instead of skleanr since the latter is a 
+   deprecated library)
 - Any visualization tool or analysis library to obtain insights from your 
 results
 - scipy.stats.chi2.ppf
