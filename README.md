@@ -39,6 +39,13 @@ installed and only need to be added.
 Remember to always pull before pushing anything to prevent version 
 conflicts & please add a commit message to all commits.
 
+In order to **download the project data** you must first install the Kaggle API.
+After you've done all the steps, on the terminal, navigate to where you want to 
+dump the data files and run the following command:
+```commandline
+kaggle competitions download -c cs429529-project1-random-forests
+```
+
 ***If you have any issues setting up the environment, please DM 
 me on discord. - Ester***
 ## Tools we are allowed to use:
