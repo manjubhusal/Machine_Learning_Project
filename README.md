@@ -13,6 +13,20 @@ We will be utilizing the following:
 - Numpy 1.26.3 (install/add on Pycharm)
 - Scipy 1.12.0 (install/add on Pycharm)
 - scikit-learn 1.4.0 (install/add on Pycharm)
+- Kaggle API 1.6.5 (installation below)
+  - Go to https://www.kaggle.com/settings/account and "create a new API token".
+  - This will download a kaggle.json file you will need. 
+  - Commands below are for Mac/Linux but process should be similar for Windows.
+  - Line 1 installs kaggle; if you get permission errors, try: ```pip install --user kaggle```.
+  - Line 2 is to move the kaggle.json file you downloaded to ~/.kaggle/kaggle.json.
+  - Line 3 is to ensure that other users of your computer do not have read access to your credentials.
+  - Line 4 is to ensure your have the correct API version.
+```commandline
+pip install kaggle
+mv ~/Downloads/kaggle.json ~/.kaggle/kaggle.json
+chmod 600 ~/.kaggle/kaggle.json
+kaggle --version
+```
 
 **To install or add packages on Pycharm**, go to Pycharm's
 settings and type in "interpreter"; select "python interpreter"
