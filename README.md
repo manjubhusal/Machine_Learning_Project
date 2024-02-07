@@ -13,6 +13,8 @@ We will be utilizing the following:
 - Numpy 1.26.3 (install/add on Pycharm)
 - Scipy 1.12.0 (install/add on Pycharm)
 - scikit-learn 1.4.0 (install/add on Pycharm)
+- pip (if you don't already have it; steps below)
+
 - Kaggle API 1.6.5 (installation below)
   - Go to https://www.kaggle.com/settings/account and "create a new API token".
   - This will download a kaggle.json file you will need. 
