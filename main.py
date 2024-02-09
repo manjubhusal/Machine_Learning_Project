@@ -11,7 +11,7 @@ features = df.iloc[:, 1:25].values  # ALL features
 target = df.iloc[:, 26].values  # last column
 
 # Split features / target into
-feat_train, feat_test, test_train, test_test = train_test_split(
+feat_train, feat_test, target_train, target_test = train_test_split(
     features, target, random_state=100)
 
 
