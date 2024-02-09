@@ -32,19 +32,7 @@ for df_Chunk in pd.read_csv("data/train.csv", chunksize=10000):
 # and the gini index. After the chunks are processed, you'll be prompted to enter
 # a choice, e,g, or m. This will definitely be changed later.
 """
-def entropy(prob):
-    prob = np.array(prob)
-    return -np.sum(prob * np.log2(prob))
-
-
-def gini_index(prob):
-    prob_array = np.array(prob)
-    return 1 - np.sum(prob_array ** 2)
-
-
-def miss_class_err(prob):
-    prob_array = np.array(prob)
-    return 1 - np.max(prob_array)
+#def calc_info_gain(dataSet, )
 
 
 def calc_probs(label):
@@ -61,27 +49,38 @@ def calc_probs(label):
     return prob
 
 
-def impurity(prob, choice):
-    match choice:
-        case 'e':
-            print("Impurity using Entropy: ")
-            return entropy(prob)
-        case 'g':
-            print("Impurity using Gini Index: ")
-            return gini_index(prob)
-        case 'm':
-            print("Impurity using Miss-Class Error: ")
-            return miss_class_err(prob)
-        case _:
-            return "Invalid Choice"
+def impurity(prob):
+        
+    e_prob = np.array(prob)
+    entropy = -np.sum(prob * np.log2(e_prob))
+        
+    g_array = np.array(prob)
+    gini = -np.sum(g_array ** 2)
+                    
+    miss_array = np.array(prob)
+    miss_error = - np.max(miss_array)
+    
+    final = max(entropy, gini, miss_error)
+    
+    if (final == entropy):
+        print("Entropy is largest: ")
+    
+    elif (final == gini):
+        print("Gini is larget: ")
+        
+    else:
+        print("Miss_Error is larges: ")
+    
+    return final
 
+    
 
-label = ['a', 'b', 'a', 'b', 'c', 'a']
+label = [1, 0, 1, 1, 0, 1, 2,]
 prob = calc_probs(label)
 
-user_input = input("Enter choice: ")
+#user_input = input("Enter choice: ")
 print("Class probabilities: ", prob)
-result = impurity(prob, user_input)
+result = impurity(prob)
 print(result)
 
 # Step 3: Calculate information gain - calculate_infoGain(dataSet, att)
