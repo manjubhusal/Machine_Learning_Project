@@ -1,18 +1,18 @@
 import pandas as pd
 import numpy as np
-import scipy
-import csv
+from sklearn.model_selection import train_test_split
 
-# Step 1: Read in the data
-num_rows = 0
-df = pd.DataFrame
+# Read in the data
+df = pd.read_csv('data/train.csv')
 
-for df_Chunk in pd.read_csv("data/train.csv", chunksize=10000):
-    num_rows += len(df_Chunk)  # find total number of rows after each df chunk
-    print("processed {0}".format(num_rows))  # test code
-    dataSet = df_Chunk
-    # df = df.append(calculate_infoGain(df_chunk, att))
+# Split the data into tID / features / target
+tID = df.iloc[:, 0].values  # don't know if this is really necessary
+features = df.iloc[:, 1:25].values  # ALL features
+target = df.iloc[:, 26].values  # last column
 
+# Split features / target into
+feat_train, feat_test, test_train, test_test = train_test_split(
+    features, target, random_state=100)
 
 # Step 2: Calculate impurity - calculate_impurity(dataSet)
 # type - type of impurity
@@ -32,6 +32,8 @@ for df_Chunk in pd.read_csv("data/train.csv", chunksize=10000):
 # and the gini index. After the chunks are processed, you'll be prompted to enter
 # a choice, e,g, or m. This will definitely be changed later.
 """
+
+
 def entropy(prob):
     prob = np.array(prob)
     return -np.sum(prob * np.log2(prob))
