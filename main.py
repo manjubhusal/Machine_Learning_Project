@@ -14,26 +14,8 @@ target = df.iloc[:, 26].values  # last column
 feat_train, feat_test, test_train, test_test = train_test_split(
     features, target, random_state=100)
 
-# Step 2: Calculate impurity - calculate_impurity(dataSet)
-# type - type of impurity
-# type (1) = entropy, type (2) = mis. error, type (3) = gini index
-# calculate_impurity(dataSet, type)
-# # # calculate entropy
-# # # calculate mis. error
-# # # calculate gini index
 
-
-# Step 1: Read in the data
-
-"""
-# Step 2: Calculate impurity - calculate_impurity(dataSet)
-# This portion of code calculates the impurity (I think) of a 
-# given simple array. I correctly calculates, entropy, miss-classification error
-# and the gini index. After the chunks are processed, you'll be prompted to enter
-# a choice, e,g, or m. This will definitely be changed later.
-"""
-#def calc_info_gain(dataSet, )
-
+# def calc_info_gain(dataSet, )
 
 def calc_probs(label):
     total_instances = len(label)
@@ -74,7 +56,6 @@ def impurity(prob):
     return final
 
 
-
 label = [1, 0, 1, 1, 0, 1, 2,]
 prob = calc_probs(label)
 
@@ -83,28 +64,6 @@ print("Class probabilities: ", prob)
 result = impurity(prob)
 print(result)
 
-# Step 3: Calculate information gain - calculate_infoGain(dataSet, att)
-
-# Step 4: Choose the best IG as split criterium - choose_splitCriterium()
-
-# Step 5: Build Decision Tree / Random Forest
-
-# Step 6: Experiment 1
-
-# Step 7: Experiment 2
 
 
-# Step 3: Calculate information gain - calculate_infoGain(dataSet, att)
-# IG(D, A)_entropy = calculate_impurity(D, 1) - ...
-# IG(D, A)_ME = calculate_impurity(D, 2) - ...
-# IG(D, A)_GI = calculate_impurity(D, 3) - ...
 
-# Step 4: Choose the best IG as split criterium - choose_splitCriterium()
-
-# Step 5: Build Decision Tree / Random Forest (Class)
-
-
-# Step 6: Experiment 1
-
-
-# Step 7: Experiment 2
