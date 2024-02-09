@@ -1,13 +1,13 @@
-import pandas as pd
+import pandas
 import numpy as np
 import scipy
 import csv
 
 # Step 1: Read in the data
 num_rows = 0
-df = pd.DataFrame
+df = pandas.DataFrame
 
-for df_Chunk in pd.read_csv("data/train.csv", chunksize=10000):
+for df_Chunk in pandas.read_csv("data/train.csv", chunksize=10000):
     num_rows += len(df_Chunk)  # find total number of rows after each df chunk
     print("processed {0}".format(num_rows))  # test code
     dataSet = df_Chunk
