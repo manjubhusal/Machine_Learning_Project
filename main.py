@@ -7,14 +7,14 @@ df = pd.read_csv('data/train.csv')
 df_len = len(df)
 print(df_len)
 
-# Split the data into tID / features / target
-tID = df.iloc[:, 0].values
-features = df.iloc[:, 1:25].values
-target = df.iloc[:, 26].values
+# Split the data
+training_data, testing_data = train_test_split(df, test_size=0.20, random_state=100, shuffle=True)
+label = training_data.isFraud()
+print(label)
 
-# Split features / target into training and testing data
-feat_train, feat_test, target_train, target_test = train_test_split(
-    features, target, train_size=.8, test_size=.20, random_state=100, shuffle=True)
+# Test for purity?
+
+# Classification
 
 
 # def calc_info_gain(dataSet, )
