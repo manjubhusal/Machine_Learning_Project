@@ -4,15 +4,17 @@ from sklearn.model_selection import train_test_split
 
 # Read in the data
 df = pd.read_csv('data/train.csv')
+df_len = len(df)
+print(df_len)
 
 # Split the data into tID / features / target
-tID = df.iloc[:, 0].values  # don't know if this is really necessary
-features = df.iloc[:, 1:25].values  # ALL features
-target = df.iloc[:, 26].values  # last column
+tID = df.iloc[:, 0].values
+features = df.iloc[:, 1:25].values
+target = df.iloc[:, 26].values
 
-# Split features / target into
+# Split features / target into training and testing data
 feat_train, feat_test, target_train, target_test = train_test_split(
-    features, target, random_state=100)
+    features, target, train_size=.8, test_size=.20, random_state=100, shuffle=True)
 
 
 # def calc_info_gain(dataSet, )
@@ -32,7 +34,6 @@ def calc_probs(label):
 
 
 def impurity(prob):
-
     e_prob = np.array(prob)
     entropy = -np.sum(prob * np.log2(e_prob))
 
@@ -56,14 +57,10 @@ def impurity(prob):
     return final
 
 
-label = [1, 0, 1, 1, 0, 1, 2,]
+label = [1, 0, 1, 1, 0, 1, 2, ]
 prob = calc_probs(label)
 
-#user_input = input("Enter choice: ")
+# user_input = input("Enter choice: ")
 print("Class probabilities: ", prob)
 result = impurity(prob)
 print(result)
-
-
-
-
