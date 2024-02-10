@@ -12,7 +12,7 @@ training_data, testing_data = train_test_split(df, test_size=0.20, random_state=
 label = training_data.isFraud()
 print(label)
 
-# Test for purity?
+# Test for purity???
 
 # Classification
 
