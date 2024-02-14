@@ -1,13 +1,17 @@
+import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import numpy as np
-from testProgram.DecisionTree import DecisionTree
+from DecisionTree import DecisionTree
+
+# clock start
+t0 = time.time()
 
 # Read in the data
 # df = pd.read_csv('extra_bb_data.csv')  # small sample of our original dataset
-df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv')
+df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
 
-selected_rows = df.iloc[:len(df)//50]
+selected_rows = df.iloc[:len(df) // 20]
 
 # Split the data into tID / features / target
 tID = selected_rows.iloc[:, 0].values  # don't know if this is really necessary?
@@ -36,3 +40,6 @@ def accuracy(y_test, y_pred):
 
 acc = accuracy(y_test, predictions)
 print(acc)
+t1 = time.time()
+
+print("Time elapsed (in seconds): ", t1-t0)
