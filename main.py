@@ -19,6 +19,7 @@ t0 = time.time()
 # # # # # # # # # # # # # # # # # # # # # # # #
 
 # TEST 1 - BABY data set (sample of original dataset)
+<<<<<<< HEAD
 df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/extra_bb_data.csv')
 selected_rows = df.iloc[:len(df)]
 
@@ -32,6 +33,24 @@ trans_ID = selected_rows.iloc[:, 0]  # Select IDs
 X_categorical = selected_rows.iloc[:, 1:10]  # Select categorical features
 X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
 y = selected_rows.iloc[:, n].values  # Our classes
+=======
+#df = pd.read_csv('data/extra_bb_data.csv')
+#selected_rows = df.iloc[:len(df)//5]
+# #
+
+# TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
+#df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
+#selected_rows = df.iloc[:len(df)]
+# #
+
+# TEST 3 - Outlook data set from class
+df = pd.read_csv('data/outlook.csv')
+selected_rows = df.iloc[:len(df)]
+
+X_categorical = selected_rows.iloc[:, 1:25]  # Select categorical features
+X_numerical = selected_rows.iloc[:, 25:26].values  # Select numerical features
+y = selected_rows.iloc[:, 26].values  # Our classes
+>>>>>>> 3df5e65 (Chi-Squared/Gini/Miss_error)
 
 # Handle "NaN" & "not found"
 X_numerical = np.nan_to_num(X_numerical)  # Replace NaN values with zero, you can replace with other values if needed

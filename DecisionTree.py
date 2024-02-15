@@ -1,7 +1,25 @@
 import numpy as np
+import scipy.special
 from collections import Counter
 from scipy.stats import chi2_contingency
 from scipy.stats import chisquare
+
+def cdf(x, df):
+    return scipy.special.gammainc(df / 2, x / 2)
+    
+
+def chi_square(obs):
+    
+    total = np.sum(obs)
+    expec = np.full_like(obs, total / len(obs))    
+    
+    stat = np.sum((obs - expec)**2 / expec)
+        
+    df = len(obs) - 1
+        
+    p_val = 1 - cdf(stat, df)
+        
+    return stat, p_val
 
 
 # Build our own chi-square from scratch
@@ -13,13 +31,15 @@ def should_split(attribute_values, class_labels):
 
     # Perform chi-square test
     observed_freq = np.histogram2d(attribute_values, class_labels)[0]
-    chi2, p = chisquare(observed_freq)
+    chi2, p = chi_square(observed_freq)
 
     # Check if any attribute is significantly correlated with the class
     if p.any() > 0.05:  # Adjust significance level as needed
         return False  # Stop splitting
     else:
         return True  # Continue splitting
+    
+    
 
 
 class DecisionTree:
@@ -117,6 +137,21 @@ class DecisionTree:
         hist = np.bincount(y)
         ps = hist / len(y)
         return -np.sum([p * np.log(p) for p in ps if p > 0])
+    
+    def _gini(self, y):
+        # Calculate the proportion of each class
+        hist = np.bincount(y)
+        ps = hist / len(y)
+    
+        # Calculate Gini index
+        gini = 1 - np.sum(np.square(ps))
+        return gini
+    
+    def _miss_error(self, y):
+        hist = np.bincount(y)
+        ps = hist /len(y)
+        return 1 - max(ps)
+        
 
     def _most_common_label(self, y):
         counter = Counter(y)
