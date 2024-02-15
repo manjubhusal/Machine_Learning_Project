@@ -2,30 +2,38 @@ import time
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
-
 from sklearn.model_selection import train_test_split
-from p1_randomforests.DecisionTree import DecisionTree
+from DecisionTree import DecisionTree
 
 # clock start
 t0 = time.time()
 
-# Read in the data
+# PROCESS DATA
+
+# TEST 0 - Outlook data set (only contains categorical data)
+# df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/outlook.csv')
+# n = len(df.columns) - 1  # Number of features
+# trans_ID = df.iloc[:, 0]  # Select IDs
+# X = df.iloc[:, 1:n].values  # Select features
+# y = df.iloc[:, n].values  # Our classes
+# # # # # # # # # # # # # # # # # # # # # # # #
 
 # TEST 1 - BABY data set (sample of original dataset)
-# df = pd.read_csv('C:/Users/Ester/PycharmProjects/p1_randomforests/data/extra_bb_data.csv')
-# selected_rows = df.iloc[:len(df)]
-# #
+df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/extra_bb_data.csv')
+selected_rows = df.iloc[:len(df)]
+
 
 # TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
-df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df)]
-# #
+# df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
+# selected_rows = df.iloc[:len(df) // 5]
 
-X_categorical = selected_rows.iloc[:, 1:25]  # Select categorical features
-X_numerical = selected_rows.iloc[:, 25:26].values  # Select numerical features
-y = selected_rows.iloc[:, 26].values  # Our classes
+n = len(df.columns) - 1  # Number of features
+trans_ID = selected_rows.iloc[:, 0]  # Select IDs
+X_categorical = selected_rows.iloc[:, 1:10]  # Select categorical features
+X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
+y = selected_rows.iloc[:, n].values  # Our classes
 
-# Handle missing values
+# Handle "NaN" & "not found"
 X_numerical = np.nan_to_num(X_numerical)  # Replace NaN values with zero, you can replace with other values if needed
 
 # Encode categorical variables
@@ -37,23 +45,30 @@ for column in X_categorical.columns:
 # Concatenate categorical and numerical features
 X = np.concatenate([X_categorical, X_numerical], axis=1)
 
-# Handle infinite values
-large_number = 1e9
-X[np.abs(X) > large_number] = np.sign(X[np.abs(X) > large_number]) * large_number
+# Todo: Add trans_ID to predictions -Since we pass X_test through
+#  predict to get our predictions, we just need to attach ID's to
+#  attribute values before they get shuffled
 
+
+# SPLIT DATA
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
+# # MAKE DTs: entropyDT, giniDT, misClassDT
 clf = DecisionTree(max_depth=10)
+
+# TRAIN
 clf.fit(X_train, y_train)
+
+# PREDICT:
 predictions = clf.predict(X_test)
 
 
+# ACCURACY:
 def accuracy(y_test, y_pred):
     return np.sum(y_test == y_pred) / len(y_test)
 
 
 acc = accuracy(y_test, predictions)
 print(acc)
-
 t1 = time.time()
 print("Time elapsed (in seconds): ", t1 - t0)

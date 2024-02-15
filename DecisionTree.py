@@ -4,6 +4,8 @@ from scipy.stats import chi2_contingency
 from scipy.stats import chisquare
 
 
+# Build our own chi-square from scratch
+
 def should_split(attribute_values, class_labels):
     # Remove non-finite values
     attribute_values = attribute_values[np.isfinite(attribute_values)]
@@ -35,7 +37,6 @@ class DecisionTree:
     def _grow_tree(self, X, y, depth=0):
         n_samples, n_feats = X.shape
         n_labels = len(np.unique(y))
-
 
         # 1. check stopping criteria
         if (depth >= self.max_depth or n_labels == 1 or
