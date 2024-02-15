@@ -69,11 +69,7 @@ predictions = clf.predict(X_test)
 
 
 # ACCURACY:
-def accuracy(y_test, y_pred):
-    return np.sum(y_test == y_pred) / len(y_test)
 
 
-acc = accuracy(y_test, predictions)
-print(acc)
 t1 = time.time()
 print("Time elapsed (in seconds): ", t1 - t0)
