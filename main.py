@@ -1,4 +1,5 @@
 import time
+from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
@@ -33,37 +34,23 @@ X_categorical = selected_rows.iloc[:, 1:10]  # Select categorical features
 X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
 y = selected_rows.iloc[:, n].values  # Our classes
 
-#df = pd.read_csv('data/extra_bb_data.csv')
-#selected_rows = df.iloc[:len(df)//5]
-# #
-
-# TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
-#df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-#selected_rows = df.iloc[:len(df)]
-# #
-
-# TEST 3 - Outlook data set from class
-df = pd.read_csv('data/outlook.csv')
-selected_rows = df.iloc[:len(df)]
-
-X_categorical = selected_rows.iloc[:, 1:25]  # Select categorical features
-X_numerical = selected_rows.iloc[:, 25:26].values  # Select numerical features
-y = selected_rows.iloc[:, 26].values  # Our classes
-
-
-# Handle "NaN" & "not found"
-X_numerical = np.nan_to_num(X_numerical)  # Replace NaN values with zero, you can replace with other values if needed
+# Imputate data
+num_imputer = SimpleImputer(strategy='mean')
+X_num_imputed = num_imputer.fit_transform(X_numerical)
+cat_imputer = SimpleImputer(strategy='most_frequent')
+X_cat_imputed = cat_imputer.fit_transform(X_categorical)
+print(X_cat_imputed)
 
 # Encode categorical variables
 label_encoders = {}
-for column in X_categorical.columns:
+for column in X_cat_imputed.columns:
     label_encoders[column] = LabelEncoder()
     X_categorical[column] = label_encoders[column].fit_transform(X_categorical[column])
 
 # Concatenate categorical and numerical features
 X = np.concatenate([X_categorical, X_numerical], axis=1)
 
-# Todo: Add trans_ID to predictions -Since we pass X_test through
+# Todo: Add trans_ID to predictions - Since we pass X_test through
 #  predict to get our predictions, we just need to attach ID's to
 #  attribute values before they get shuffled
 
