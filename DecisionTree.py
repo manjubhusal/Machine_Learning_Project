@@ -1,12 +1,7 @@
 import numpy as np
 import scipy.special
 from collections import Counter
-from scipy.stats import chi2_contingency
-from scipy.stats import chisquare
-
-
-def cdf(x, df):
-    return scipy.special.gammainc(df / 2, x / 2)
+from scipy.stats import chi2
 
 
 def chi_square(obs):
@@ -17,7 +12,7 @@ def chi_square(obs):
 
     df = len(obs) - 1
 
-    p_val = 1 - cdf(stat, df)
+    p_val = 1 - chi2.cdf(stat, df)
 
     return stat, p_val
 
