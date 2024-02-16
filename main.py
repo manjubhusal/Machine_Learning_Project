@@ -1,4 +1,5 @@
 import time
+from sklearn import metrics
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import LabelEncoder
 import pandas as pd
@@ -58,6 +59,7 @@ X = np.concatenate([X_categorical, X_numerical], axis=1)
 # SPLIT DATA
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
+
 # # MAKE DTs: entropyDT, giniDT, misClassDT
 clf = DecisionTree(max_depth=10)
 
@@ -69,6 +71,25 @@ predictions = clf.predict(X_test)
 
 
 # ACCURACY:
+#Building Confusion matrix
+
+confusion_matrix = metrics.confusion_matrix(y_test, predictions)
+print(confusion_matrix)
+
+#calculate the True Negative(TN), FalsePositive(FP), FalseNegative (FN) and TruePositive(TP) and put them in an array
+
+TN, FP, FN, TP = confusion_matrix.ravel()
+print(TN, FP, FN, TP)
+
+#Calculate True Positive Rate(TPR) and True Negative Rate(TNR)
+
+TPR = TP / (TP + FN)
+TNR = TN / (TN + FP)
+
+#Calculate Balanced Accuracy
+
+balanced_accuracy = (TPR + TNR) / 2
+print(balanced_accuracy)
 
 
 t1 = time.time()
