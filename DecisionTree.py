@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.special
 from collections import Counter
 from scipy.stats import chi2
 
@@ -7,11 +6,8 @@ from scipy.stats import chi2
 def chi_square(obs):
     total = np.sum(obs)
     expec = np.full_like(obs, total / len(obs))
-
     stat = np.sum((obs - expec) ** 2 / expec)
-
     df = len(obs) - 1
-
     p_val = 1 - chi2.cdf(stat, df)
 
     return stat, p_val
@@ -30,11 +26,12 @@ def should_split(attribute_values, class_labels):
 
 
 class DecisionTree:
-    def __init__(self, min_samples_split=2, max_depth=100, n_features=None):
+    def __init__(self, min_samples_split=2, max_depth=100, n_features=None, ig_type=''):
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.n_features = n_features
         self.root = None
+        self.ig_type = ig_type
 
     def fit(self, X, y):
         # We need to make sure "n_features" does not exceed the number of actual features we have
@@ -103,8 +100,18 @@ class DecisionTree:
         # 3. calculate the weighted avg. entropy of children
         n = len(y)
         n_left, n_right = len(left_idxs), len(right_idxs)
-        e_left, e_right = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
-        child_entropy = (n_left / n) * e_left + (n_right / n) * e_right
+
+        if self.ig_type == 'entropy':
+            e_left, e_right = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
+            child_entropy = (n_left / n) * e_left + (n_right / n) * e_right
+        elif self.ig_type == 'gini':
+            g_left, g_right = self._gini(y[left_idxs]), self._gini(y[right_idxs])
+            child_entropy = (n_left / n) * g_left + (n_right / n) * g_right
+        elif self.ig_type == 'mis_error':
+            m_left, m_right = self._miss_error(y[left_idxs]), self._miss_error(y[right_idxs])
+            child_entropy = (n_left / n) * m_left + (n_right / n) * m_right
+        else:
+            print("INFO GAIN CALC ERROR")
 
         # 4. calculate the IG
         information_gain = parent_entropy - child_entropy
