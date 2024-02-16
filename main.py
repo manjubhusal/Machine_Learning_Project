@@ -24,12 +24,12 @@ t0 = time.time()
 # # # # # # # # # # # # # # # # # # # # # # # #
 
 # TEST 1 - BABY data set (sample of original dataset)
-#df = pd.read_csv('/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/extra_bb_data.csv')
-#selected_rows = df.iloc[:len(df)]
+# df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/extra_bb_data.csv')
+# selected_rows = df.iloc[:len(df)]
 
 # TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
-#df = pd.read_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/train.csv")
-#selected_rows = df.iloc[:len(df) // 5]
+df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
+selected_rows = df.iloc[:len(df) // 50]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
@@ -43,32 +43,14 @@ X_num_imputed = num_imputer.fit_transform(X_numerical)
 cat_imputer = SimpleImputer(strategy='most_frequent')
 X_cat_imputed = cat_imputer.fit_transform(X_categorical)
 
-
 # Encode categorical variables
-#label_encoders = {}
-#for i, column in enumerate(X_cat_imputed.T):  # Transpose to iterate over columns
-#    label_encoders[i] = LabelEncoder()
-#    X_cat_imputed[:, i] = label_encoders[i].fit_transform(column)
-
-
-
-# Define a function for label encoding
-def label_encode(column):
-    encoder = LabelEncoder()
-    return encoder.fit_transform(column)
-
-# Use multiprocessing to parallelize label encoding
-with Pool() as pool:
-    encoded_columns = pool.map(label_encode, X_cat_imputed.T)
-
-# Update X_cat_imputed with the encoded columns
-X_cat_imputed = np.array(encoded_columns).T
-
-
+label_encoders = {}
+for i, column in enumerate(X_cat_imputed.T):  # Transpose to iterate over columns
+    label_encoders[i] = LabelEncoder()
+    X_cat_imputed[:, i] = label_encoders[i].fit_transform(column)
 
 # Concatenate categorical and numerical features
 X = np.concatenate((X_num_imputed, X_cat_imputed), axis=1)
-
 
 # Todo: Add trans_ID to predictions - Since we pass X_test through
 #  predict to get our predictions, we just need to attach ID's to
