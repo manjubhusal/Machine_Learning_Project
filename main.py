@@ -20,7 +20,7 @@ t0 = time.time()
 # # # # # # # # # # # # # # # # # # # # # # # #
 
 # TEST 1 - BABY data set (sample of original dataset)
-df = pd.read_csv('/Users/eaguil/PycharmProjects/p1_randomforests/data/extra_bb_data.csv')
+#df = pd.read_csv('/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/extra_bb_data.csv')
 selected_rows = df.iloc[:len(df)]
 
 
