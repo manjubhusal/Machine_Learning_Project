@@ -26,8 +26,8 @@ t0 = time.time()
 # selected_rows = df.iloc[:len(df)]
 
 # TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
-df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df)]
+df = pd.read_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/train.csv")
+selected_rows = df.iloc[:len(df)//5]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
