@@ -26,8 +26,8 @@ t0 = time.time()
 # selected_rows = df.iloc[:len(df)]
 
 # TEST 2 - FULL data set (can be partitioned to smaller data set using "// n")
-df = pd.read_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df)//5]
+df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
+selected_rows = df.iloc[:len(df) // 20]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
@@ -57,35 +57,54 @@ X = np.concatenate((X_num_imputed, X_cat_imputed), axis=1)
 # SPLIT DATA
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
 
-# # MAKE DTs: entropyDT, giniDT, misClassDT
-entropy_DT = DecisionTree(max_depth=10, ig_type='entropy')
 
-# TRAIN
-entropy_DT.fit(X_train, y_train)
+# MAKE DTs -> TRAIN -> PREDICT -> TEST ACCURACY
+# 1. Calculate the True Negative(TN), FalsePositive(FP), FalseNegative (FN)
+#    and TruePositive(TP) and put them in an array
+# 2. Calculate True Positive Rate(TPR) and True Negative Rate(TNR)
+# 3. Calculate Balanced Accuracy
 
-# PREDICT:
-predictions = entropy_DT.predict(X_test)
 
-# ACCURACY:
-# Building Confusion matrix
-
-confusion_matrix = metrics.confusion_matrix(y_test, predictions)
-print(confusion_matrix)
-
-# calculate the True Negative(TN), FalsePositive(FP), FalseNegative (FN) and TruePositive(TP) and put them in an array
-
-TN, FP, FN, TP = confusion_matrix.ravel()
+# Using Entropy
+entropy_DT = DecisionTree(max_depth=10, ig_type='entropy')  # MAKE DT
+entropy_DT.fit(X_train, y_train)  # TRAIN
+predictions_eDT = entropy_DT.predict(X_test)  # PREDICT
+confMatrix_eDT = metrics.confusion_matrix(y_test, predictions_eDT)
+print(confMatrix_eDT)
+TN, FP, FN, TP = confMatrix_eDT.ravel()
 print(TN, FP, FN, TP)
-
-# Calculate True Positive Rate(TPR) and True Negative Rate(TNR)
-
 TPR = TP / (TP + FN)
 TNR = TN / (TN + FP)
-
-# Calculate Balanced Accuracy
-
 balanced_accuracy = (TPR + TNR) / 2
-print(balanced_accuracy)
+print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
+##############################################################################
+# # Using Gini impurity
+# gini_DT = DecisionTree(max_depth=10, ig_type='gini')
+# gini_DT.fit(X_train, y_train)  # TRAIN
+# predictions_gDT = gini_DT.predict(X_test)  # PREDICT
+# confMatrix_gDT = metrics.confusion_matrix(y_test, predictions_gDT)
+# print(confMatrix_gDT)
+# TN, FP, FN, TP = confMatrix_gDT.ravel()
+# print(TN, FP, FN, TP)
+# TPR = TP / (TP + FN)
+# TNR = TN / (TN + FP)
+# balanced_accuracy = (TPR + TNR) / 2
+# print("Using Gini Impurity, our balanced accuracy is: ", balanced_accuracy)
+###############################################################################
+# # Using misclassification error
+# misClass_DT = DecisionTree(max_depth=10, ig_type='mis_error')
+# misClass_DT.fit(X_train, y_train)  # TRAIN
+# predictions_mDT = misClass_DT.predict(X_test)  # PREDICT
+# confMatrix_mDT = metrics.confusion_matrix(y_test, predictions_mDT)
+# print(confMatrix_mDT)
+# TN, FP, FN, TP = confMatrix_mDT.ravel()
+# print(TN, FP, FN, TP)
+# TPR = TP / (TP + FN)
+# TNR = TN / (TN + FP)
+# balanced_accuracy = (TPR + TNR) / 2
+# print("Using Gini Impurity, our balanced accuracy is: ", balanced_accuracy)
+###############################################################################
+
 
 t1 = time.time()
 print("Time elapsed (in seconds): ", t1 - t0)

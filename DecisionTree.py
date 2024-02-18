@@ -27,21 +27,6 @@ def should_split(attribute_values, class_labels):
         return True  # Continue splitting
 
 
-class Node:
-    def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
-        self.feature = feature
-        self.threshold = threshold
-        self.left = left
-        self.right = right
-        self.value = value
-
-    def is_leaf_node(self):
-        return self.value is not None
-
-
-
-
-
 class DecisionTree:
     def __init__(self, min_samples_split=2, max_depth=100, n_features=None, ig_type=''):
         self.min_samples_split = min_samples_split
@@ -54,63 +39,8 @@ class DecisionTree:
         # We need to make sure "n_features" does not exceed the number of actual features we have
         self.n_features = X.shape[1] if not self.n_features else min(self.n_features, X.shape[1])
         # Infer the number of classes from the target array
-        self.num_classes = len(np.unique(y))
+        self.num_classes = len(np.unique(y))  # ??? What is this for?
         self.root = self._grow_tree(X, y)
-
-    def _best_split(self, X, y, feat_idxs):
-        best_gain = -1
-        split_idx, split_threshold = None, None
-
-        def calculate_gain(feat_idx, X_column, y):
-            thresholds = np.unique(X_column)
-            local_best_gain = -1
-            local_split_threshold = None
-            for thr in thresholds:
-                gain = self._information_gain(y, X_column, thr)
-                if gain > local_best_gain:
-                    local_best_gain = gain
-                    local_split_threshold = thr
-            return local_best_gain, local_split_threshold, feat_idx
-
-        results = Parallel(n_jobs=-1)(
-            delayed(calculate_gain)(feat_idx, X[:, feat_idx], y) for feat_idx in feat_idxs
-        )
-
-        for gain, thr, feat_idx in results:
-            if gain > best_gain:
-                best_gain = gain
-                split_idx = feat_idx
-                split_threshold = thr
-
-        return split_idx, split_threshold
-
-    def _information_gain(self, y, X_column, threshold):
-        parent_entropy = self._entropy(y)
-
-        left_idxs, right_idxs = self._split(X_column, threshold)
-        if len(left_idxs) == 0 or len(right_idxs) == 0:
-            return 0
-
-        n = len(y)
-        n_left, n_right = len(left_idxs), len(right_idxs)
-
-        e_left, e_right = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
-
-        child_entropy = (n_left / n) * e_left + (n_right / n) * e_right
-
-        information_gain = parent_entropy - child_entropy
-
-        return information_gain
-
-    def _entropy(self, y):
-        hist = np.bincount(y, minlength=self.num_classes)
-        ps = hist / len(y)
-        return -np.sum(ps * np.log(ps + 1e-12))
-
-    def _split(self, X_column, split_thresh):
-        left_idxs = np.where(X_column <= split_thresh)[0]
-        right_idxs = np.where(X_column > split_thresh)[0]
-        return left_idxs, right_idxs
 
     def _grow_tree(self, X, y, depth=0):
         n_samples, n_feats = X.shape
@@ -142,6 +72,90 @@ class DecisionTree:
 
         return Node(best_feature, best_thresh, left, right)
 
+    # Here we want to find all possible thresholds and splits and what the best ones are
+
+    def _best_split(self, X, y, feat_idxs):
+        best_gain = -1
+        split_idx, split_threshold = None, None
+
+        def calculate_gain(feat_idx, X_column, y):
+            thresholds = np.unique(X_column)
+            local_best_gain = -1
+            local_split_threshold = None
+            for thr in thresholds:
+                gain = self._information_gain(y, X_column, thr)
+                if gain > local_best_gain:
+                    local_best_gain = gain
+                    local_split_threshold = thr
+            return local_best_gain, local_split_threshold, feat_idx
+
+        results = Parallel(n_jobs=-1)(
+            delayed(calculate_gain)(feat_idx, X[:, feat_idx], y) for feat_idx in feat_idxs
+        )
+
+        for gain, thr, feat_idx in results:
+            if gain > best_gain:
+                best_gain = gain
+                split_idx = feat_idx
+                split_threshold = thr
+
+        return split_idx, split_threshold
+
+    def _information_gain(self, y, X_column, threshold):
+
+        # 1. Get parent entropy
+        parent_entropy = self._entropy(y)
+
+        # 2. create children
+        left_idxs, right_idxs = self._split(X_column, threshold)
+        if len(left_idxs) == 0 or len(right_idxs) == 0:
+            return 0
+
+        # 3. calculate the weighted avg. entropy of children
+        n = len(y)
+        n_left, n_right = len(left_idxs), len(right_idxs)
+
+        if self.ig_type == 'entropy':
+            e_left, e_right = self._entropy(y[left_idxs]), self._entropy(y[right_idxs])
+            child_entropy = (n_left / n) * e_left + (n_right / n) * e_right
+        elif self.ig_type == 'gini':
+            g_left, g_right = self._gini(y[left_idxs]), self._gini(y[right_idxs])
+            child_entropy = (n_left / n) * g_left + (n_right / n) * g_right
+        elif self.ig_type == 'mis_error':
+            m_left, m_right = self._miss_error(y[left_idxs]), self._miss_error(y[right_idxs])
+            child_entropy = (n_left / n) * m_left + (n_right / n) * m_right
+        else:
+            print("INFO GAIN CALC ERROR")
+
+        # 4. calculate the IG
+        information_gain = parent_entropy - child_entropy
+
+        return information_gain
+
+    def _split(self, X_column, split_thresh):
+        left_idxs = np.where(X_column <= split_thresh)[0]
+        right_idxs = np.where(X_column > split_thresh)[0]
+        return left_idxs, right_idxs
+
+    def _entropy(self, y):
+        hist = np.bincount(y, minlength=self.num_classes)
+        ps = hist / len(y)
+        return -np.sum(ps * np.log(ps + 1e-12))
+
+    def _gini(self, y):
+        # Calculate the proportion of each class
+        hist = np.bincount(y)
+        ps = hist / len(y)
+
+        # Calculate Gini index
+        gini = 1 - np.sum(np.square(ps))
+        return gini
+
+    def _miss_error(self, y):
+        hist = np.bincount(y)
+        ps = hist / len(y)
+        return 1 - max(ps)
+
     def _most_common_label(self, y):
         unique, counts = np.unique(y, return_counts=True)
         return unique[np.argmax(counts)]
@@ -156,3 +170,15 @@ class DecisionTree:
         if x[node.feature] <= node.threshold:
             return self._traverse_tree(x, node.left)
         return self._traverse_tree(x, node.right)
+
+
+class Node:
+    def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
+        self.feature = feature
+        self.threshold = threshold
+        self.left = left
+        self.right = right
+        self.value = value
+
+    def is_leaf_node(self):
+        return self.value is not None
