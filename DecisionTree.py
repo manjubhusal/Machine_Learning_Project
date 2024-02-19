@@ -3,13 +3,16 @@ import numpy as np
 from scipy.stats import chi2
 
 
+# Functions that have optimized:
+# - Entropy, Gini, Mis. Class Error
+
+
 def chi_square(obs):
     total = np.sum(obs)
     expec = np.full_like(obs, total / len(obs))
     stat = np.sum((obs - expec) ** 2 / expec)
     df = len(obs) - 1
     p_val = 1 - chi2.cdf(stat, df)
-
     return stat, p_val
 
 
@@ -29,6 +32,7 @@ def should_split(attribute_values, class_labels):
 
 class DecisionTree:
     def __init__(self, min_samples_split=2, max_depth=100, n_features=None, ig_type=''):
+        self.num_classes = None
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.n_features = n_features
@@ -39,7 +43,7 @@ class DecisionTree:
         # We need to make sure "n_features" does not exceed the number of actual features we have
         self.n_features = X.shape[1] if not self.n_features else min(self.n_features, X.shape[1])
         # Infer the number of classes from the target array
-        self.num_classes = len(np.unique(y))  # ??? What is this for?
+        self.num_classes = len(np.unique(y))
         self.root = self._grow_tree(X, y)
 
     def _grow_tree(self, X, y, depth=0):
@@ -143,18 +147,16 @@ class DecisionTree:
         return -np.sum(ps * np.log(ps + 1e-12))
 
     def _gini(self, y):
-        # Calculate the proportion of each class
         hist = np.bincount(y)
         ps = hist / len(y)
-
-        # Calculate Gini index
-        gini = 1 - np.sum(np.square(ps))
+        gini = 1 - sum(np.square(ps))
         return gini
 
     def _miss_error(self, y):
         hist = np.bincount(y)
         ps = hist / len(y)
-        return 1 - max(ps)
+        miss_error = 1 - np.max(ps)
+        return miss_error
 
     def _most_common_label(self, y):
         unique, counts = np.unique(y, return_counts=True)
