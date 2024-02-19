@@ -1,11 +1,13 @@
-from joblib import Parallel, delayed
 import numpy as np
+from joblib import Parallel, delayed
 from scipy.stats import chi2
 
 
-# Functions that have optimized:
+# Functions that have been optimized:
 # - Entropy, Gini, Mis. Class Error
-
+# - Many attempts have been made to optimize best_split
+#   with some improvement but is still the most computationally
+#   exhaustive function we have
 
 def chi_square(obs):
     total = np.sum(obs)
@@ -31,13 +33,14 @@ def should_split(attribute_values, class_labels):
 
 
 class DecisionTree:
-    def __init__(self, min_samples_split=2, max_depth=100, n_features=None, ig_type=''):
+    def __init__(self, min_samples_split=2, max_depth=10, n_features=None, ig_type=''):
         self.num_classes = None
         self.min_samples_split = min_samples_split
         self.max_depth = max_depth
         self.n_features = n_features
         self.root = None
         self.ig_type = ig_type
+        self.count = 0  # TEST
 
     def fit(self, X, y):
         # We need to make sure "n_features" does not exceed the number of actual features we have
@@ -61,7 +64,12 @@ class DecisionTree:
         feat_idxs = np.random.choice(n_feats, self.n_features, replace=False)
 
         # 2. find the best split
+        # growTree_start = time.perf_counter()  # BENCHMARK TEST
         best_feature, best_thresh = self._best_split(X, y, feat_idxs)
+        # growTree_end = time.perf_counter()  # BENCHMARK TEST
+        # growTree_elapsed = growTree_end - growTree_start  # BENCHMARK TEST
+        # print("Finding the ", self.count, "th best split took (in secs): ", growTree_elapsed)  # BENCHMARK TEST
+        # self.count += 1  # BENCHMARK TEST
 
         # 2.1 Check if further splitting should occur based on the chi-square test
         attribute_values = X[:, best_feature]

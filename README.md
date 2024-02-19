@@ -82,3 +82,20 @@ maximum depth, average depth, average accuracy, etc.
 
 ***
 
+## Program Flow
+
+    # PROCESS DATA:
+    # (1) Split data into: IDs, Cat. features, Num. features, Classes
+    # (2) Imputate numerical & categorical features
+    # (3) Encode categorical features
+    # (4) Concatenate num + cat features back into one
+    # (5) TODO: attach IDs back to corresponding rows of features/classes
+    # (6) Split data into "train" and "test" 
+    # MAKE DTs -> TRAIN -> PREDICT -> TEST ACCURACY
+    # TESTING ACCURACY:
+    # 1. Calculate the True Negative(TN), FalsePositive(FP), FalseNegative (FN)
+    #    and TruePositive(TP) and put them in an array
+    # 2. Calculate True Positive Rate(TPR) and True Negative Rate(TNR)
+    # 3. Calculate Balanced Accuracy
+    # Process is available to be implemented via entropy, mis. class error
+    # and gini index.
