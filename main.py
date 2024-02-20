@@ -44,14 +44,12 @@ def main():
 
     ##############################################################################
     # Using Entropy
-    # entropy_DT = DecisionTree(max_depth=10, ig_type='entropy')  # MAKE DT
-    # entropy_DT.fit(X_train, y_train)  # TRAIN
-    # predictions_eDT = entropy_DT.predict(X_test)  # PREDICT
-
-    clf = RandomForest(max_depth=10)
-    clf.fit(X_train, y_train)
-    predictions_eDT = clf.predict(X_test)
-
+    entropy_DT = DecisionTree(max_depth=10, ig_type='entropy')  # MAKE DT
+    entropy_DT.fit(X_train, y_train)  # TRAIN
+    predictions_eDT = entropy_DT.predict(X_test)  # PREDICT
+    # clf = RandomForest(max_depth=10)
+    # clf.fit(X_train, y_train)
+    # predictions_eDT = clf.predict(X_test)
     confMatrix_eDT = metrics.confusion_matrix(y_test, predictions_eDT)
     print(confMatrix_eDT)
     TN, FP, FN, TP = confMatrix_eDT.ravel()
@@ -60,7 +58,6 @@ def main():
     TNR = TN / (TN + FP)
     balanced_accuracy = (TPR + TNR) / 2
     print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
-
     ##############################################################################
     # # Using Gini impurity
     # gini_DT = DecisionTree(max_depth=10, ig_type='gini')
