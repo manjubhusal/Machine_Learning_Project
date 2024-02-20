@@ -99,3 +99,14 @@ maximum depth, average depth, average accuracy, etc.
     # 3. Calculate Balanced Accuracy
     # Process is available to be implemented via entropy, mis. class error
     # and gini index.
+
+
+    # Random Forest
+    # TRAIN:
+    # - Get a subset of the dataset
+    # - Create a DT
+    # - Repeat for as many times as the number of trees
+    # TEST:
+    # - Get the predictions from each tree
+    # - Classification: hold a majority vote
+    # - Regression: get the mean of the predictions
