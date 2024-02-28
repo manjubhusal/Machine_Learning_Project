@@ -1,27 +1,27 @@
-import cProfile
 import time
+from collections import Counter
 
 import pandas as pd
 import numpy as np
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn import metrics
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-from DecisionTree import DecisionTree
-from RandomForest import RandomForest
+from decision_tree import DecisionTree
+from random_forest import RandomForest
 
-
-# PROGRAM VERSION 1.0
+# PROGRAM VERSION 1.5 - changes have been recorded in README
 
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
 # Don't forget to replace the file path below with your own path for testing
 df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df) // 100]
+selected_rows = df.iloc[:len(df) // 70]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
-X_categorical = selected_rows.iloc[:, 1:10]  # Select categorical features
+X_categorical = selected_rows.iloc[:, 1:10].values  # Select categorical features
 X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
 y = selected_rows.iloc[:, n].values  # Our classes
 
@@ -35,27 +35,33 @@ for i, column in enumerate(X_cat_imputed.T):  # Transpose to iterate over column
     label_encoders[i] = LabelEncoder()
     X_cat_imputed[:, i] = label_encoders[i].fit_transform(column)
 
-X = np.concatenate((X_num_imputed, X_cat_imputed), axis=1)
+X = np.concatenate((X_cat_imputed, X_num_imputed), axis=1)
+
 
 # Todo: Add trans_ID to predictions - Since we pass X_test through
 #  predict to get our predictions, we just need to attach ID's to
 #  attribute values before they get shuffled
 
 # SPLIT DATA
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+X_train, X_test, y_train, y_test = (
+    train_test_split(X, y, test_size=0.2, random_state=1234))
+
+# todo:set stratify=y in train_test_split
 
 ##############################################################################
-# Using Entropy
-entropy_DT = DecisionTree(max_depth=10, ig_type='entropy')  # MAKE DT
+# # Using Entropy
+num_classes = len(np.unique(y))  # only needs to be calculated one time
+entropy_DT = DecisionTree(ig_type='entropy', node_split_min=2, max_depth=10,
+                          n_features=None, n_classes=num_classes)  # MAKE DT
 entropy_DT.fit(X_train, y_train)  # TRAIN
 predictions_eDT = entropy_DT.predict(X_test)  # PREDICT
 # clf = RandomForest(max_depth=10)
 # clf.fit(X_train, y_train)
 # predictions_eDT = clf.predict(X_test)
 confMatrix_eDT = metrics.confusion_matrix(y_test, predictions_eDT)
-print(confMatrix_eDT)
+# print(confMatrix_eDT)
 TN, FP, FN, TP = confMatrix_eDT.ravel()
-print(TN, FP, FN, TP)
+# print(TN, FP, FN, TP)
 TPR = TP / (TP + FN)
 TNR = TN / (TN + FP)
 balanced_accuracy = (TPR + TNR) / 2
@@ -91,4 +97,3 @@ print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
 time_end = time.time()
 time_elapsed = time_end - time_start
 print("Total runtime (in seconds): ", time_elapsed)
-

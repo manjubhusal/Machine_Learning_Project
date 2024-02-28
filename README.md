@@ -82,6 +82,19 @@ maximum depth, average depth, average accuracy, etc.
 
 ***
 
+## Major Changes in Version 1.5
+1. Most function names have been changed
+2. Functions that could be moved outside of Decision Tree file have begun to be moved into
+a helper_functions file. 
+3. Previously our program was using entropy to calculate the parent's impurity for both
+gini and misclassification error which was very wrong of course so that was corrected, however,
+it created major issues when running the program using mis_error. More details in #3.
+4. **representative_class()/_most_common_label()** now handles cases where y is empty in which
+case it will return the most common class. This issue only happened whenever we ran a corrected
+version of our program using ig_type=mis_error. The issue never happened with gini index or
+entropy.
+
+
 ## Program Flow
 
     # PROCESS DATA:
