@@ -1,6 +1,5 @@
 from collections import Counter
 from scipy.stats import chi2
-
 import numpy as np
 
 
@@ -45,6 +44,14 @@ def should_split(attribute_values, class_labels):
         return False  # Stop splitting
     else:
         return True  # Continue splitting
+
+
+# This function splits the data into two groups (left and right) based on whether
+# the data points fall below or above a given threshold value for a selected feature.
+def partition_data_by_threshold(X_column, split_thresh):
+    left_idxs = np.where(X_column <= split_thresh)[0]
+    right_idxs = np.where(X_column > split_thresh)[0]
+    return left_idxs, right_idxs
 
 
 # The old _most_common_label function is lines 49-51 after function name was changed

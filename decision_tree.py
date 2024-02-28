@@ -1,53 +1,5 @@
-
 from joblib import Parallel, delayed
-
 from helper_functions import *
-
-
-# def chi_square(obs):
-#     total = np.sum(obs)
-#     expec = np.full_like(obs, total / len(obs))
-#     stat = np.sum((obs - expec) ** 2 / expec)
-#     df = len(obs) - 1
-#     p_val = 1 - chi2.cdf(stat, df)
-#     return stat, p_val
-#
-#
-# def should_split(attribute_values, class_labels):
-#     # Perform chi-square test
-#     attribute_values = np.array(attribute_values)
-#     class_labels = np.array(class_labels)
-#     observed_freq = np.histogram2d(attribute_values, class_labels)[0]
-#     chi_2, p = chi_square(observed_freq)
-#
-#     # Check if any attribute is significantly correlated with the class
-#     if p.any() > 0.05:  # Adjust significance level as needed
-#         return False  # Stop splitting
-#     else:
-#         return True  # Continue splitting
-
-
-# def representative_class(y):
-#     unique, counts = np.unique(y, return_counts=True)
-#     return unique[np.argmax(counts)]
-
-# def representative_class(y):
-#     # In the case of our dataset, the majority class is '0' so that is what
-#     # we are returning
-#     if len(y) == 0:
-#         return 0
-#     counter = Counter(y)
-#     most_common_element = counter.most_common(1)
-#     if most_common_element:  # Check if the list is not empty
-#         return most_common_element[0][0]
-#     else:
-#         return 0
-
-
-def _split(X_column, split_thresh):
-    left_idxs = np.where(X_column <= split_thresh)[0]
-    right_idxs = np.where(X_column > split_thresh)[0]
-    return left_idxs, right_idxs
 
 
 class DecisionTree:
@@ -95,7 +47,7 @@ class DecisionTree:
             return Node(value=leaf_value)
 
         # 3. create child nodes
-        left_idxs, right_idxs = _split(X[:, best_feature], best_thresh)
+        left_idxs, right_idxs = partition_data_by_threshold(X[:, best_feature], best_thresh)
         left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
         right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
 
@@ -134,7 +86,7 @@ class DecisionTree:
     def calc_info_gain(self, y, X_column, threshold):
 
         # Create children & calculate their weighted avg. impurity
-        left_idxs, right_idxs = _split(X_column, threshold)
+        left_idxs, right_idxs = partition_data_by_threshold(X_column, threshold)
         n_left, n_right = len(left_idxs), len(right_idxs)
         n = len(y)
 
