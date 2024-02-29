@@ -3,136 +3,126 @@ from helper_functions import *
 
 
 class DecisionTree:
-    def __init__(self, ig_type, max_depth, node_split_min, n_features, n_classes):
+    def __init__(self, ig_type, max_depth, node_split_min, num_features):
         self.root = None
         self.ig_type = ig_type
         self.max_depth = max_depth
         self.node_split_min = node_split_min
-        self.n_features = n_features
+        self.num_features = num_features
         self.count = 0  # TEST
-        self.n_classes = n_classes
 
     def fit(self, X, y):
-        # We need to make sure "n_features" does not exceed the number of actual features we have
-        self.n_features = X.shape[1] if not self.n_features else min(self.n_features, X.shape[1])
+        # We need to make sure "n_features" does not exceed the number of actual
+        # features we have
+        if self.num_features is None:
+            self.num_features = X.shape[1]
+        else:
+            if self.num_features > X.shape[1]:
+                self.num_features = X.shape[1]
         # Infer the number of classes from the target array
-        self.root = self._grow_tree(X, y)
+        self.root = self.build_tree(X, y)
 
-    def _grow_tree(self, X, y, depth=0):
-        n_samples, n_feats = X.shape
-        n_labels = len(np.unique(y))
+    def build_tree(self, X, y, depth=0):
+        # Create Node & label the node w most representative class
+        node = Node()
+        num_samples, num_features = X.shape
 
-        # 1. check stopping criteria
-        if (depth >= self.max_depth or n_labels == 1 or
-                n_samples < self.node_split_min):
-            leaf_value = representative_class(y)
-            return Node(value=leaf_value)
+        # Check stopping criteria
+        if (depth >= self.max_depth or len(np.unique(y)) == 1 or
+                num_samples < self.node_split_min):
+            node.value = representative_class(y)
+            return node
 
-        # This allows us to have a randomized group that does not contain duplicate features
-        # feat_idxs is feature indices
-        feat_idxs = np.random.choice(n_feats, self.n_features, replace=False)
+        # Choose a randomized subset of features to consider for finding the best split
+        # feature_indices = np.random.choice(num_features, self.num_features, replace=False)
+        feature_indices = np.random.permutation(num_features)[:self.num_features]
+        best_threshold, best_feature_index = self.find_best_split(X, y, feature_indices)
 
-        # 2. find the best split
-        # growTree_start = time.perf_counter()  # BENCHMARK TEST
-        best_feature, best_thresh = self.find_best_split(X, y, feat_idxs)
-        # growTree_end = time.perf_counter()  # BENCHMARK TEST
-        # growTree_elapsed = growTree_end - growTree_start  # BENCHMARK TEST
-        # print("Finding the ", self.count, "th best split took (in secs): ", growTree_elapsed)  # BENCHMARK TEST
-        # self.count += 1  # BENCHMARK TEST
+        # Check if further splitting should occur based on the chi-square test
+        if not should_split(X[:, best_feature_index], y):
+            node.value = representative_class(y)
+            return node
 
-        # 2.1 Check if further splitting should occur based on the chi-square test
-        attribute_values = X[:, best_feature]
-        if not should_split(attribute_values, y):
-            leaf_value = representative_class(y)
-            return Node(value=leaf_value)
+        # Create child nodes
+        left_indices, right_indices = split(X[:, best_feature_index], best_threshold)
+        node.feature = best_feature_index
+        node.threshold = best_threshold
+        node.left = self.build_tree(X[left_indices, :], y[left_indices], depth + 1)
+        node.right = self.build_tree(X[right_indices, :], y[right_indices], depth + 1)
 
-        # 3. create child nodes
-        left_idxs, right_idxs = partition_data_by_threshold(X[:, best_feature], best_thresh)
-        left = self._grow_tree(X[left_idxs, :], y[left_idxs], depth + 1)
-        right = self._grow_tree(X[right_idxs, :], y[right_idxs], depth + 1)
-
-        return Node(best_feature, best_thresh, left, right)
+        return node
 
     # Here we want to find all possible thresholds and splits and what the best ones are
     # This function was previously called _best_split
-    def find_best_split(self, X, y, feat_idxs):
-        best_gain = -1
-        split_idx, split_threshold = None, None
-
-        def calculate_gain(feat_idx, X_column, y):
-            thresholds = np.unique(X_column)
-            local_best_gain = -1
-            local_split_threshold = None
-            for thr in thresholds:
-                gain = self.calc_info_gain(y, X_column, thr)
-                if gain > local_best_gain:
-                    local_best_gain = gain
-                    local_split_threshold = thr
-            return local_best_gain, local_split_threshold, feat_idx
-
+    def find_best_split(self, X, y, feature_indices):
+        # Find the optimal threshold for each feature in parallel
         results = Parallel(n_jobs=-1)(
-            delayed(calculate_gain)(feat_idx, X[:, feat_idx], y) for feat_idx in feat_idxs
+            delayed(self.find_best_threshold)
+            (feature_index, X[:, feature_index], y) for feature_index in feature_indices
         )
 
-        for gain, thr, feat_idx in results:
-            if gain > best_gain:
-                best_gain = gain
-                split_idx = feat_idx
-                split_threshold = thr
+        # Convert list of tuples to an array for easy access
+        results_array = np.array(results)
 
-        return split_idx, split_threshold
+        # Find the index of the maximum gain in the results array
+        max_gain_index = np.argmax(results_array[:, 0])
 
-    # This function was previously called _information_gain
-    def calc_info_gain(self, y, X_column, threshold):
+        # Extract the split threshold, and feature index using the max_gain_index
+        # best_gain = results_array[max_gain_index, 0]
+        split_threshold = results_array[max_gain_index, 1]
+        split_feature_index = int(results_array[max_gain_index, 2])  # Cast to int if necessary
 
-        # Create children & calculate their weighted avg. impurity
-        left_idxs, right_idxs = partition_data_by_threshold(X_column, threshold)
-        n_left, n_right = len(left_idxs), len(right_idxs)
-        n = len(y)
+        return split_threshold, split_feature_index
 
-        if n_left == 0 or n_right == 0:
-            return 0
+    def find_best_threshold(self, feature_index, selected_feature, y):
+        thresholds = np.unique(selected_feature)
+        best_gain = -1
+        best_threshold = None
 
-        if self.ig_type == 'entropy':
-            parent_impurity = calc_entropy(y)
-            e_left = calc_entropy(y[left_idxs])
-            e_right = calc_entropy(y[right_idxs])
-            child_impurity = (n_left / n) * e_left + (n_right / n) * e_right
-        elif self.ig_type == 'gini':
-            parent_impurity = calc_gini(y)
-            g_left, g_right = calc_gini(y[left_idxs]), calc_gini(y[right_idxs])
-            child_impurity = (n_left / n) * g_left + (n_right / n) * g_right
-        elif self.ig_type == 'mis_error':
-            parent_impurity = calc_misclass_error(y)
-            m_left, m_right = (calc_misclass_error(y[left_idxs]),
-                               calc_misclass_error(y[right_idxs]))
-            child_impurity = (n_left / n) * m_left + (n_right / n) * m_right
-        else:
-            print("INFO GAIN CALC ERROR")
+        for threshold in thresholds:
+            calculated_gain = calc_info_gain(self.ig_type, y, selected_feature, threshold)
+            if calculated_gain > best_gain:
+                best_gain, best_threshold = calculated_gain, threshold
 
-        information_gain = parent_impurity - child_impurity
-
-        return information_gain
+        return best_gain, best_threshold, feature_index
 
     def predict(self, X):
-        return np.array([self._traverse_tree(x, self.root) for x in X])
+        # Initialize an empty list to store the predictions
+        predictions = []
 
-    def _traverse_tree(self, x, node):
-        if node.is_leaf_node():
+        # Loop through each item in X
+        for x in X:
+            # Traverse the tree starting from the root for each item
+            # and append the result to the predictions list
+            # prediction = depth_first_traversal(x, self.root)
+            prediction = self.classify(x, self.root)
+            predictions.append(prediction)
+
+        # Convert the list of predictions to a NumPy array before returning
+        return np.array(predictions)
+
+    def classify(self, x, node):
+        # Base case: if the current node is a leaf node
+        if node.is_leaf():
             return node.value
-
-        if x[node.feature] <= node.threshold:
-            return self._traverse_tree(x, node.left)
-        return self._traverse_tree(x, node.right)
+        # Recursive case: traverse the tree based on the feature value of x
+        else:
+            if x[node.feature] <= node.threshold:
+                return self.classify(x, node.left)
+            else:
+                return self.classify(x, node.right)
 
 
 class Node:
     def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
-        self.feature = feature
-        self.threshold = threshold
+        self.value = value
         self.left = left
         self.right = right
-        self.value = value
+        self.feature = feature
+        self.threshold = threshold
 
-    def is_leaf_node(self):
-        return self.value is not None
+    def is_leaf(self):
+        if self.value is not None:
+            return True
+        else:
+            return False

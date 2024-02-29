@@ -82,7 +82,7 @@ maximum depth, average depth, average accuracy, etc.
 
 ***
 
-## Major Changes in Version 1.5
+## Major Changes in Version 2.0
 1. Most function names have been changed
 2. Functions that could be moved outside of Decision Tree file have begun to be moved into
 a helper_functions file. 

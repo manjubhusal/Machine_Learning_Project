@@ -46,18 +46,44 @@ def should_split(attribute_values, class_labels):
         return True  # Continue splitting
 
 
+def calc_info_gain(impurity, y, selected_feature, threshold):
+    # Create children & calculate their weighted avg. impurity
+    left_idxs, right_idxs = split(selected_feature, threshold)
+    n_left, n_right = len(left_idxs), len(right_idxs)
+    n = len(y)
+
+    if n_left == 0 or n_right == 0:
+        return 0
+
+    if impurity == 'entropy':
+        parent_impurity = calc_entropy(y)
+        e_left = calc_entropy(y[left_idxs])
+        e_right = calc_entropy(y[right_idxs])
+        child_impurity = (n_left / n) * e_left + (n_right / n) * e_right
+    elif impurity == 'gini':
+        parent_impurity = calc_gini(y)
+        g_left, g_right = calc_gini(y[left_idxs]), calc_gini(y[right_idxs])
+        child_impurity = (n_left / n) * g_left + (n_right / n) * g_right
+    elif impurity == 'mis_error':
+        parent_impurity = calc_misclass_error(y)
+        m_left, m_right = (calc_misclass_error(y[left_idxs]),
+                           calc_misclass_error(y[right_idxs]))
+        child_impurity = (n_left / n) * m_left + (n_right / n) * m_right
+    else:
+        print("INFO GAIN CALC ERROR")
+
+    information_gain = parent_impurity - child_impurity
+
+    return information_gain
+
+
 # This function splits the data into two groups (left and right) based on whether
 # the data points fall below or above a given threshold value for a selected feature.
-def partition_data_by_threshold(X_column, split_thresh):
+def split(X_column, split_thresh):
     left_idxs = np.where(X_column <= split_thresh)[0]
     right_idxs = np.where(X_column > split_thresh)[0]
     return left_idxs, right_idxs
 
-
-# The old _most_common_label function is lines 49-51 after function name was changed
-# def representative_class(y):
-#     unique, counts = np.unique(y, return_counts=True)
-#     return unique[np.argmax(counts)]
 
 def representative_class(y):
     # In the case of our dataset, the majority class is '0' so that is what

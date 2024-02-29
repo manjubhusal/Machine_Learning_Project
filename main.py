@@ -1,6 +1,4 @@
 import time
-from collections import Counter
-
 import pandas as pd
 import numpy as np
 
@@ -17,7 +15,7 @@ time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
 # Don't forget to replace the file path below with your own path for testing
 df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df) // 70]
+selected_rows = df.iloc[:len(df)]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
@@ -37,28 +35,26 @@ for i, column in enumerate(X_cat_imputed.T):  # Transpose to iterate over column
 
 X = np.concatenate((X_cat_imputed, X_num_imputed), axis=1)
 
-
 # Todo: Add trans_ID to predictions - Since we pass X_test through
 #  predict to get our predictions, we just need to attach ID's to
 #  attribute values before they get shuffled
 
 # SPLIT DATA
-X_train, X_test, y_train, y_test = (
+X_train, X_validation, y_train, y_validation = (
     train_test_split(X, y, test_size=0.2, random_state=1234))
 
 # todo:set stratify=y in train_test_split
 
 ##############################################################################
 # # Using Entropy
-num_classes = len(np.unique(y))  # only needs to be calculated one time
-entropy_DT = DecisionTree(ig_type='entropy', node_split_min=2, max_depth=10,
-                          n_features=None, n_classes=num_classes)  # MAKE DT
+entropy_DT = DecisionTree(ig_type='entropy', node_split_min=2,
+                          max_depth=10, num_features=None)
 entropy_DT.fit(X_train, y_train)  # TRAIN
-predictions_eDT = entropy_DT.predict(X_test)  # PREDICT
+predictions_eDT = entropy_DT.predict(X_validation)  # PREDICT
 # clf = RandomForest(max_depth=10)
 # clf.fit(X_train, y_train)
 # predictions_eDT = clf.predict(X_test)
-confMatrix_eDT = metrics.confusion_matrix(y_test, predictions_eDT)
+confMatrix_eDT = metrics.confusion_matrix(y_validation, predictions_eDT)
 # print(confMatrix_eDT)
 TN, FP, FN, TP = confMatrix_eDT.ravel()
 # print(TN, FP, FN, TP)

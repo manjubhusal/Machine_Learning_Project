@@ -16,7 +16,7 @@ class RandomForest:
         for _ in range(self.n_trees):
             tree = DecisionTree(node_split_min=self.min_samples_split,
                                 max_depth=self.max_depth,
-                                n_features=self.n_features, ig_type='entropy')
+                                num_features=self.n_features, ig_type='entropy')
             X_sample, y_sample = self._bootstrap_samples(X, y)
             tree.fit(X_sample, y_sample)
             self.trees.append(tree)
