@@ -3,6 +3,7 @@ from helper_functions import *
 
 
 class DecisionTree:
+
     def __init__(self, ig_type, max_depth, node_split_min, num_features):
         self.root = None
         self.ig_type = ig_type
@@ -11,6 +12,7 @@ class DecisionTree:
         self.num_features = num_features
         self.count = 0  # TEST
 
+    # todo: ESTER -> integrate "fit" functionality into build_tree and then delete "fit"
     def fit(self, X, y):
         # We need to make sure "n_features" does not exceed the number of actual
         # features we have
@@ -22,6 +24,7 @@ class DecisionTree:
         # Infer the number of classes from the target array
         self.root = self.build_tree(X, y)
 
+    # todo: EVERYONE -> dramatically change as much as possible even at the expense of lower runtime
     def build_tree(self, X, y, depth=0):
         # Create Node & label the node w most representative class
         node = Node()
@@ -33,6 +36,7 @@ class DecisionTree:
             node.value = representative_class(y)
             return node
 
+        # todo: MANJU -> find alternative way to do np.random.permutation...
         # Choose a randomized subset of features to consider for finding the best split
         # feature_indices = np.random.choice(num_features, self.num_features, replace=False)
         feature_indices = np.random.permutation(num_features)[:self.num_features]
@@ -74,6 +78,7 @@ class DecisionTree:
 
         return split_threshold, split_feature_index
 
+    # todo: JACOB -> change this up dramatically
     def find_best_threshold(self, feature_index, selected_feature, y):
         thresholds = np.unique(selected_feature)
         best_gain = -1
@@ -113,6 +118,7 @@ class DecisionTree:
                 return self.classify(x, node.right)
 
 
+# todo: MANJU -> nest Node class inside Decision Tree class
 class Node:
     def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
         self.value = value

@@ -3,6 +3,7 @@ from scipy.stats import chi2
 import numpy as np
 
 
+# todo: JACOB -> go over all of info gain helper functions
 def calc_gini(y):
     hist = np.bincount(y)
     ps = hist / len(y)
@@ -46,10 +47,12 @@ def should_split(attribute_values, class_labels):
         return True  # Continue splitting
 
 
+# todo: ESTER -> dramatically change this
 def calc_info_gain(impurity, y, selected_feature, threshold):
     # Create children & calculate their weighted avg. impurity
     left_idxs, right_idxs = split(selected_feature, threshold)
-    n_left, n_right = len(left_idxs), len(right_idxs)
+    n_left = len(left_idxs)
+    n_right = len(right_idxs)
     n = len(y)
 
     if n_left == 0 or n_right == 0:
@@ -85,6 +88,8 @@ def split(X_column, split_thresh):
     return left_idxs, right_idxs
 
 
+# todo: ESTER -> try to see if we can use a different way of
+#  doing representative_class - maybe without using Counter
 def representative_class(y):
     # In the case of our dataset, the majority class is '0' so that is what
     # we are returning
