@@ -47,8 +47,8 @@ X_train, X_validation, y_train, y_validation = (
 
 ##############################################################################
 # # Using Entropy
-entropy_DT = DecisionTree(ig_type='entropy', node_split_min=2,
-                          max_depth=10, num_features=None)
+entropy_DT = DecisionTree(ig_type='entropy', node_split_min=10,
+                          max_depth=50, num_features=None)
 entropy_DT.fit(X_train, y_train)  # TRAIN
 predictions_eDT = entropy_DT.predict(X_validation)  # PREDICT
 # clf = RandomForest(max_depth=10)
