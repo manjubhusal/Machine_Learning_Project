@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from decision_tree import DecisionTree
 from random_forest import RandomForest
 
-# PROGRAM VERSION 1.5 - changes have been recorded in README
+# PROGRAM VERSION 2.0 - changes have been recorded in README
 
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
