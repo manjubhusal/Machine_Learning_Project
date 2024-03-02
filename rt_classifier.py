@@ -10,7 +10,6 @@ class RandomForest:
         self.max_depth = max_depth
         self.num_features = num_features
         self.num_trees = num_trees
-        pass
 
     def build_classifier(self, X_train, y_train, X_validate):
         all_predictions = []
@@ -32,8 +31,8 @@ class RandomForest:
             # Bagging our predictions
             all_predictions.append(predictions)
 
-        # Holding Majority vote
-        majority_prediction = mode(all_predictions)
+        return self.majority_prediction(all_predictions)
 
-        return majority_prediction
-
+    @staticmethod
+    def majority_prediction(predictions):
+        return mode(predictions)

@@ -30,8 +30,6 @@ X_categorical = selected_rows.iloc[:, 1:10].values  # Select categorical feature
 X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
 y = selected_rows.iloc[:, n].values  # Our classes
 
-print(type(y))
-
 num_impute = SimpleImputer(strategy='mean')
 X_num_imputed = num_impute.fit_transform(X_numerical)
 cat_impute = SimpleImputer(strategy='most_frequent')
@@ -55,9 +53,11 @@ X_train, X_validation, y_train, y_validation = (
 
 # todo:set stratify=y in train_test_split
 
-# Using Random Forests
-# random_forest = RandomForest(ig_type='entropy', node_split_min=10, max_depth=50, num_features=None)
+# # Using Random Forests (under construction)
+# random_forest = RandomForest(ig_type='entropy', node_split_min=10,
+#                              max_depth=50, num_features=None, num_trees=10)
 # final_prediction = random_forest.build_classifier(X_train, y_train, X_validation)
+
 
 ##############################################################################
 # # Using Entropy
