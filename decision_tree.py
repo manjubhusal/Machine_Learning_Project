@@ -3,6 +3,20 @@ from helper_functions import *
 
 
 class DecisionTree:
+# nesting Node class inside DecisionTree class
+    class Node:
+        def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
+            self.value = value
+            self.left = left
+            self.right = right
+            self.feature = feature
+            self.threshold = threshold
+
+        def is_leaf(self):
+            if self.value is not None:
+                return True
+            else:
+                return False
 
     def __init__(self, ig_type, max_depth, node_split_min, num_features):
         self.root = None
@@ -27,7 +41,7 @@ class DecisionTree:
     # todo: EVERYONE -> dramatically change as much as possible even at the expense of lower runtime
     def build_tree(self, X, y, depth=0):
         # Create Node & label the node w most representative class
-        node = Node()
+        node = DecisionTree.Node()
         num_samples, num_features = X.shape
 
         # Check stopping criteria
@@ -36,10 +50,9 @@ class DecisionTree:
             node.value = representative_class(y)
             return node
 
-        # todo: MANJU -> find alternative way to do np.random.permutation...
         # Choose a randomized subset of features to consider for finding the best split
-        # feature_indices = np.random.choice(num_features, self.num_features, replace=False)
-        feature_indices = np.random.permutation(num_features)[:self.num_features]
+        feature_indices = np.random.choice(num_features, self.num_features, replace=False)
+        # feature_indices = np.random.permutation(num_features)[:self.num_features]
         best_threshold, best_feature_index = self.find_best_split(X, y, feature_indices)
 
         # Check if further splitting should occur based on the chi-square test
@@ -119,16 +132,16 @@ class DecisionTree:
 
 
 # todo: MANJU -> nest Node class inside Decision Tree class
-class Node:
-    def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
-        self.value = value
-        self.left = left
-        self.right = right
-        self.feature = feature
-        self.threshold = threshold
+# class Node:
+#     def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
+#         self.value = value
+#         self.left = left
+#         self.right = right
+#         self.feature = feature
+#         self.threshold = threshold
 
-    def is_leaf(self):
-        if self.value is not None:
-            return True
-        else:
-            return False
+#     def is_leaf(self):
+#         if self.value is not None:
+#             return True
+#         else:
+#             return False

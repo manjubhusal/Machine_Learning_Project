@@ -14,8 +14,8 @@ from random_forest import RandomForest
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
 # Don't forget to replace the file path below with your own path for testing
-df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
-selected_rows = df.iloc[:len(df)]
+df = pd.read_csv("/Users/manjuadhikari/PycharmProjects/p1_randomforests/data/train.csv")
+selected_rows = df.iloc[:len(df)// 5]
 
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
@@ -55,9 +55,13 @@ predictions_eDT = entropy_DT.predict(X_validation)  # PREDICT
 # clf.fit(X_train, y_train)
 # predictions_eDT = clf.predict(X_test)
 confMatrix_eDT = metrics.confusion_matrix(y_validation, predictions_eDT)
-# print(confMatrix_eDT)
-TN, FP, FN, TP = confMatrix_eDT.ravel()
-# print(TN, FP, FN, TP)
+print(confMatrix_eDT)
+# TN, FP, FN, TP = confMatrix_eDT.ravel()
+TN = confMatrix_eDT [0,0]
+FP = confMatrix_eDT [0,1]
+FN = confMatrix_eDT [1,0]
+TP = confMatrix_eDT [1,1]
+print(TN, FP, FN, TP)
 TPR = TP / (TP + FN)
 TNR = TN / (TN + FP)
 balanced_accuracy = (TPR + TNR) / 2
@@ -66,8 +70,8 @@ print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
 # # Using Gini impurity
 # gini_DT = DecisionTree(max_depth=10, ig_type='gini')
 # gini_DT.fit(X_train, y_train)  # TRAIN
-# predictions_gDT = gini_DT.predict(X_test)  # PREDICT
-# confMatrix_gDT = metrics.confusion_matrix(y_test, predictions_gDT)
+# predictions_gDT = gini_DT.predict(X_validation)  # PREDICT
+# confMatrix_gDT = metrics.confusion_matrix(y_validation, predictions_gDT)
 # print(confMatrix_gDT)
 # TN, FP, FN, TP = confMatrix_gDT.ravel()
 # print(TN, FP, FN, TP)
@@ -79,8 +83,8 @@ print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
 # # Using misclassification error
 # misClass_DT = DecisionTree(max_depth=10, ig_type='mis_error')
 # misClass_DT.fit(X_train, y_train)  # TRAIN
-# predictions_mDT = misClass_DT.predict(X_test)  # PREDICT
-# confMatrix_mDT = metrics.confusion_matrix(y_test, predictions_mDT)
+# predictions_mDT = misClass_DT.predict(X_validation)  # PREDICT
+# confMatrix_mDT = metrics.confusion_matrix(y_validation, predictions_mDT)
 # print(confMatrix_mDT)
 # TN, FP, FN, TP = confMatrix_mDT.ravel()
 # print(TN, FP, FN, TP)
