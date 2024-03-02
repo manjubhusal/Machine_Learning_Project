@@ -1,9 +1,10 @@
 from joblib import Parallel, delayed
+
 from helper_functions import *
 
 
 class DecisionTree:
-# nesting Node class inside DecisionTree class
+    # nesting Node class inside DecisionTree class
     class Node:
         def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
             self.value = value
@@ -69,6 +70,42 @@ class DecisionTree:
 
         return node
 
+    # def is_pure(labels):
+    #     return len(np.unique(labels)) == 1
+    #
+    # def build_tree(self, X, y, depth=0):
+    #
+    #     # Create Node & label the node w most representative class
+    #     node = DecisionTree.Node()
+    #     num_samples, num_features = X.shape
+    #
+    #     # # Check stopping criteria
+    #     # if (self.is_pure(y) or
+    #     #         self.max_depth <= depth or
+    #     #         self.node_split_min < num_samples):
+    #     #     node.value = representative_class(y)
+    #     #     return node
+    #
+    #     if not self.is_pure(y):
+    #         # Randomize the subset of features we will use to find best split
+    #         feat_idx = np.random.choice(num_features, self.num_features, replace=False)
+    #         # Split the criterion
+    #         best_threshold, best_feature_index = self.find_best_split(X, y, feat_idx)
+    #         # Check if further splitting should occur based on the chi-square test
+    #         # if not should_split(X[:, best_feature_index], y):
+    #         #     node.value = representative_class(y)
+    #         #     return node
+    #         # Create child nodes
+    #         left_indices, right_indices = split(X[:, best_feature_index], best_threshold)
+    #         node.feature = best_feature_index
+    #         node.threshold = best_threshold
+    #         node.left = self.build_tree(X[left_indices, :], y[left_indices], depth + 1)
+    #         node.right = self.build_tree(X[right_indices, :], y[right_indices], depth + 1)
+    #     else:
+    #         return node
+    #
+    #     return node
+
     # Here we want to find all possible thresholds and splits and what the best ones are
     # This function was previously called _best_split
     def find_best_split(self, X, y, feature_indices):
@@ -129,7 +166,6 @@ class DecisionTree:
                 return self.classify(x, node.left)
             else:
                 return self.classify(x, node.right)
-
 
 # todo: MANJU -> nest Node class inside Decision Tree class
 # class Node:
