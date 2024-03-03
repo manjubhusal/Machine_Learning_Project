@@ -1,6 +1,8 @@
 import time
 import pandas as pd
 import numpy as np
+import joblib
+import os
 from sklearn import metrics
 
 from sklearn.preprocessing import LabelEncoder
@@ -10,7 +12,6 @@ from sklearn.model_selection import train_test_split
 from dt_classifier import DecisionTree
 from rt_classifier import RandomForest
 
-# PROGRAM VERSION 2.0 - changes have been recorded in README
 
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
@@ -18,7 +19,7 @@ time_start = time.time()
 # df = pd.read_csv("/Users/manjuadhikari/PycharmProjects/p1_randomforests/data/train.csv")
 
 # TRAINING / VALIDATING
-df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
+df = pd.read_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/train.csv")
 
 # TESTING
 # df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/test.csv")
@@ -56,7 +57,17 @@ X_train, X_validation, y_train, y_validation = (
 # # Using Random Forests (under construction)
 # random_forest = RandomForest(ig_type='entropy', node_split_min=10,
 #                              max_depth=50, num_features=None, num_trees=10)
-# final_prediction = random_forest.build_classifier(X_train, y_train, X_validation)
+# final_prediction = random_forest.build_classifier
+
+
+# Get the number of samples in the validation set
+num_validation_samples = X_validation.shape[0]
+
+# Create an array of indices corresponding to the samples in the validation set
+validation_indices = np.arange(len(df))[-num_validation_samples:]
+
+# Retrieve transaction IDs from the original DataFrame using the validation indices
+transaction_ids = df.iloc[validation_indices]['TransactionID']
 
 
 ##############################################################################
@@ -66,6 +77,11 @@ entropy_DT = DecisionTree(ig_type='entropy', node_split_min=10,
 entropy_DT.fit(X_train, y_train)  # TRAIN
 predictions_eDT = entropy_DT.predict(X_validation)  # PREDICT
 confMatrix_eDT = metrics.confusion_matrix(y_validation, predictions_eDT)
+
+# Prints predictions to predictions.csv file
+predictions = pd.DataFrame({'TransactionID': transaction_ids, 'isFraud': predictions_eDT})
+predictions.to_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/predictions.csv", index=False)
+
 print(confMatrix_eDT)
 TN = confMatrix_eDT[0, 0]
 FP = confMatrix_eDT[0, 1]
@@ -76,6 +92,28 @@ TPR = TP / (TP + FN)
 TNR = TN / (TN + FP)
 balanced_accuracy = (TPR + TNR) / 2
 print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
+
+
+
+# This section tries to save the tree running entropy
+filename = 'train_model.sav'
+joblib.dump(entropy_DT, filename)
+
+loaded_model = joblib.load('train_model.sav')
+
+# Print the loaded model
+print(loaded_model)
+
+# Step 1: Confirm the type of entropy_DT
+print(type(entropy_DT))
+
+# Step 2: Check the type of the loaded model
+print(type(loaded_model))
+
+# Step 3: Check if the file exists
+print(os.path.exists('train_model.sav'))
+
+
 ##############################################################################
 # # Using Gini impurity
 # gini_DT = DecisionTree(max_depth=10, ig_type='gini')
