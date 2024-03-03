@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from dt_classifier import DecisionTree
 from rt_classifier import RandomForest
 
+# Program Version 3.0
 
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
