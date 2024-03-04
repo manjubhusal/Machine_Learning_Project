@@ -15,10 +15,10 @@ from rt_classifier import RandomForest
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
 # Don't forget to replace the file path below with your own path for testing
-# df = pd.read_csv("/Users/manjuadhikari/PycharmProjects/p1_randomforests/data/train.csv")
+df = pd.read_csv("/Users/manjuadhikari/PycharmProjects/p1_randomforests/data/train.csv")
 
 # TRAINING / VALIDATING
-df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
+# df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
 
 # TESTING
 # df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/test.csv")
@@ -54,9 +54,9 @@ X_train, X_validation, y_train, y_validation = (
 # todo:set stratify=y in train_test_split
 
 # # Using Random Forests (under construction)
-# random_forest = RandomForest(ig_type='entropy', node_split_min=10,
-#                              max_depth=50, num_features=None, num_trees=10)
-# final_prediction = random_forest.build_classifier(X_train, y_train, X_validation)
+random_forest = RandomForest(ig_type='entropy', node_split_min=10,
+                             max_depth=50, num_features=None, num_trees=10)
+final_prediction = random_forest.build_classifier(X_train, y_train, X_validation)
 
 
 ##############################################################################
@@ -65,7 +65,7 @@ entropy_DT = DecisionTree(ig_type='entropy', node_split_min=10,
                           max_depth=50, num_features=None)
 entropy_DT.fit(X_train, y_train)  # TRAIN
 predictions_eDT = entropy_DT.predict(X_validation)  # PREDICT
-confMatrix_eDT = metrics.confusion_matrix(y_validation, predictions_eDT)
+confMatrix_eDT = metrics.confusion_matrix(y_validation, final_prediction)
 print(confMatrix_eDT)
 TN = confMatrix_eDT[0, 0]
 FP = confMatrix_eDT[0, 1]

@@ -1,4 +1,5 @@
 from statistics import mode
+import statistics
 from sklearn.utils import resample
 from dt_classifier import DecisionTree
 
@@ -11,7 +12,7 @@ class RandomForest:
         self.num_features = num_features
         self.num_trees = num_trees
 
-    def build_classifier(self, X_train, y_train, X_validate):
+    def build_classifier(self, X_train, y_train, X_validatation):
         all_predictions = []
 
         # 1. Bootstrapping, training & predicting
@@ -27,12 +28,14 @@ class RandomForest:
 
             dt_classifier.fit(X_sample, y_sample)
             # We will use the full X_validate dataset for each tree
-            predictions = dt_classifier.predict(X_validate)
+            predictions = dt_classifier.predict(X_validatation)
             # Bagging our predictions
             all_predictions.append(predictions)
 
         return self.majority_prediction(all_predictions)
 
-    @staticmethod
-    def majority_prediction(predictions):
-        return mode(predictions)
+    def majority_prediction(self, all_predictions):
+        flattened_predictions = [tuple(prediction) for prediction in all_predictions]
+        # Use mode function to calculate mode
+        majority_vote = mode(flattened_predictions)
+        return majority_vote
