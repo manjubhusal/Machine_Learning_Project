@@ -1,6 +1,8 @@
 import time
 import pandas as pd
 import numpy as np
+import joblib
+import os
 from sklearn import metrics
 
 from sklearn.preprocessing import LabelEncoder
@@ -10,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from dt_classifier import DecisionTree
 from rt_classifier import RandomForest
 
-# PROGRAM VERSION 2.0 - changes have been recorded in README
+# Program Version 3.0
 
 time_start = time.time()
 # TEST 1 - FULL data set (can be partitioned to smaller data set using "// n")
@@ -76,6 +78,28 @@ TPR = TP / (TP + FN)
 TNR = TN / (TN + FP)
 balanced_accuracy = (TPR + TNR) / 2
 print("Using Entropy, our balanced accuracy is: ", balanced_accuracy)
+
+
+
+# This section tries to save the tree running entropy
+filename = 'train_model.sav'
+joblib.dump(entropy_DT, filename)
+
+loaded_model = joblib.load('train_model.sav')
+
+# Print the loaded model
+print(loaded_model)
+
+# Step 1: Confirm the type of entropy_DT
+print(type(entropy_DT))
+
+# Step 2: Check the type of the loaded model
+print(type(loaded_model))
+
+# Step 3: Check if the file exists
+print(os.path.exists('train_model.sav'))
+
+
 ##############################################################################
 # # Using Gini impurity
 # gini_DT = DecisionTree(max_depth=10, ig_type='gini')

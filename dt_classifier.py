@@ -131,14 +131,8 @@ class DecisionTree:
     # todo: JACOB -> change this up dramatically
     def find_best_threshold(self, feature_index, selected_feature, y):
         thresholds = np.unique(selected_feature)
-        best_gain = -1
-        best_threshold = None
-
-        for threshold in thresholds:
-            calculated_gain = calc_info_gain(self.ig_type, y, selected_feature, threshold)
-            if calculated_gain > best_gain:
-                best_gain, best_threshold = calculated_gain, threshold
-
+        gains_thresholds = [(calc_info_gain(self.ig_type, y, selected_feature, i), i) for i in thresholds]
+        best_gain, best_threshold = max(gains_thresholds)
         return best_gain, best_threshold, feature_index
 
     def predict(self, X):
