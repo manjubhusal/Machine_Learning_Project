@@ -1,6 +1,21 @@
 from collections import Counter
 from scipy.stats import chi2
+from sklearn import metrics
 import numpy as np
+
+
+def calc_balanced_accuracy(y_true, y_pred):
+    conf_matrix = metrics.confusion_matrix(y_true, y_pred)
+    print(conf_matrix)
+    TN = conf_matrix[0, 0]
+    FP = conf_matrix[0, 1]
+    FN = conf_matrix[1, 0]
+    TP = conf_matrix[1, 1]
+    print(TN, FP, FN, TP)
+    TPR = TP / (TP + FN)
+    TNR = TN / (TN + FP)
+    balanced_accuracy = (TPR + TNR) / 2
+    return balanced_accuracy
 
 
 # todo: JACOB -> go over all of info gain helper functions
@@ -48,9 +63,11 @@ def should_split(attribute_values, class_labels):
 
 
 # todo: ESTER -> dramatically change this
-def calc_info_gain(impurity, y, selected_feature, threshold):
+def calc_info_gain(impurity, X, y, selected_feature, threshold):
     # Create children & calculate their weighted avg. impurity
-    left_idxs, right_idxs = split(selected_feature, threshold)
+    left_idxs = np.where(selected_feature <= threshold)[0]
+    right_idxs = np.where(selected_feature > threshold)[0]
+
     n_left = len(left_idxs)
     n_right = len(right_idxs)
     n = len(y)
@@ -63,29 +80,22 @@ def calc_info_gain(impurity, y, selected_feature, threshold):
         e_left = calc_entropy(y[left_idxs])
         e_right = calc_entropy(y[right_idxs])
         child_impurity = (n_left / n) * e_left + (n_right / n) * e_right
+        information_gain = parent_impurity - child_impurity
     elif impurity == 'gini':
         parent_impurity = calc_gini(y)
         g_left, g_right = calc_gini(y[left_idxs]), calc_gini(y[right_idxs])
         child_impurity = (n_left / n) * g_left + (n_right / n) * g_right
+        information_gain = parent_impurity - child_impurity
     elif impurity == 'mis_error':
         parent_impurity = calc_misclass_error(y)
         m_left, m_right = (calc_misclass_error(y[left_idxs]),
                            calc_misclass_error(y[right_idxs]))
         child_impurity = (n_left / n) * m_left + (n_right / n) * m_right
+        information_gain = parent_impurity - child_impurity
     else:
         print("INFO GAIN CALC ERROR")
 
-    information_gain = parent_impurity - child_impurity
-
     return information_gain
-
-
-# This function splits the data into two groups (left and right) based on whether
-# the data points fall below or above a given threshold value for a selected feature.
-def split(X_column, split_thresh):
-    left_idxs = np.where(X_column <= split_thresh)[0]
-    right_idxs = np.where(X_column > split_thresh)[0]
-    return left_idxs, right_idxs
 
 
 # todo: ESTER -> try to see if we can use a different way of
