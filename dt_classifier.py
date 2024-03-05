@@ -32,7 +32,6 @@ class DecisionTree:
     def is_pure(labels):
         return len(np.unique(labels)) == 1
 
-    # todo: dramatically change as much as possible even at the expense of lower runtime
     def build_tree(self, X, y):
         # Increment depth at start of each call
         self.current_depth += 1
@@ -52,8 +51,6 @@ class DecisionTree:
         # Choose a randomized subset of features to consider for finding the best split
         subset = np.random.choice(X.shape[1], self.num_features, replace=False)
 
-        # node.threshold, node.feature = self.find_best_split(X, y, subset)
-
         # Find the optimal threshold for each feature in parallel
         results = Parallel(n_jobs=-1)(
             delayed(self.find_best_threshold)
@@ -67,7 +64,6 @@ class DecisionTree:
         max_gain_index = np.argmax(results_array[:, 0])
 
         # Extract the split threshold, and feature index using the max_gain_index
-        # best_gain = results_array[max_gain_index, 0]
         node.threshold = results_array[max_gain_index, 1]
         node.feature = int(results_array[max_gain_index, 2])  # Cast to int if necessary
 
@@ -88,34 +84,6 @@ class DecisionTree:
 
         self.current_depth -= 1
         return node
-
-    # def build_tree(self, X, y, depth=0):
-    #     # Create Node & label the node w most representative class
-    #     node = DecisionTree.Node()
-    #     num_samples, num_features = X.shape
-    #
-    #     # Check stopping criteria
-    #     if (depth >= self.max_depth or len(np.unique(y)) == 1 or
-    #             num_samples < self.node_split_min):
-    #         node.value = representative_class(y)
-    #         return node
-    #
-    #     # Choose a randomized subset of features to consider for finding the best split
-    #     feature_indices = np.random.choice(num_features, self.num_features, replace=False)
-    #     # feature_indices = np.random.permutation(num_features)[:self.num_features]
-    #     node.threshold, node.feature = self.find_best_split(X, y, feature_indices)
-    #
-    #     # Check if further splitting should occur based on the chi-square test
-    #     if not should_split(X[:, node.feature], y):
-    #         node.value = representative_class(y)
-    #         return node
-    #
-    #     # Create child nodes
-    #     left_indices, right_indices = split(X[:, node.feature], node.threshold)
-    #     node.left = self.build_tree(X[left_indices, :], y[left_indices], depth + 1)
-    #     node.right = self.build_tree(X[right_indices, :], y[right_indices], depth + 1)
-    #
-    #     return node
 
     def find_best_threshold(self, feature_index, selected_feature, X, y):
         thresholds = np.unique(selected_feature)
