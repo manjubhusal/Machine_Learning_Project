@@ -1,11 +1,30 @@
 # P1_RandomForests
+## How to run the program
+Include steps on how to run the program for the 
+testers and where to specify path to the
+dataset.
 
-## Project Collaborators
-Ester Aguilera, Jacob Graves and Manju Bhusal
-
-Currently, this README is meant for developer use only.
 ***
-## How to set up the project locally
+## File Manifest
+Describe each file in our program with one sentence.
+1. main:
+2. dt_classifier:
+3. rt_classifier:
+4. helper_functions:
+
+## Project Collaborators and Contributions
+#### Team Name: Group 10
+#### Ester: 
+#### Jacob:
+#### Manju:
+
+## Kaggle Submission
+- Kaggle Score (of final entry)
+- Team Name on Kaggle 
+- Accuracy 
+- Date Run (of final entry)
+***
+## For Devs: How to set up the project locally
 We will be utilizing the following:
 - Python 3.12.1
 - Pycharm 2022.2.5 (Community Edition)
