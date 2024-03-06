@@ -14,10 +14,11 @@ time_start = time.time()
 # TRAINING / VALIDATING
 # df = pd.read_csv("/Users/eaguil/PycharmProjects/p1_randomforests/data/train.csv")
 # df = pd.read_csv("/Users/manjuadhikari/PycharmProjects/p1_randomforests/data/train.csv")
-df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
+# df = pd.read_csv("C:/Users/Ester/PycharmProjects/p1_randomforests/data/train.csv")
 # df = pd.read_csv("/nfs/student/e/eaguilera/p1_randomforests/data/train.csv")
+df = pd.read_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/train.csv")
 
-selected_rows = df.iloc[:len(df)]
+selected_rows = df.iloc[:len(df) // 100]
 n = len(df.columns) - 1  # Number of features
 trans_ID = selected_rows.iloc[:, 0]  # Select IDs
 X_categorical = selected_rows.iloc[:, 1:10].values  # Select categorical features
@@ -43,6 +44,16 @@ X_train, X_validation, y_train, y_validation = (
 # Set info gain type / Impurity for either DT or RF classifier
 impurity_type = 'entropy'
 
+# This section before Decision Tree Classifier helps link up Transaction ID's to the predictions
+# Get the number of samples in the validation set
+num_validation_samples = X_validation.shape[0]
+
+# Create an array of indices corresponding to the samples in the validation set
+validation_indices = np.arange(len(df))[-num_validation_samples:]
+
+# Retrieve transaction IDs from the original DataFrame using the validation indices
+transaction_ids = df.iloc[validation_indices]['TransactionID']
+
 ##############################################################################
 # # Decision Tree Classifier
 # dt_model = DecisionTree(X_train, y_train, ig_type=impurity_type,
@@ -65,7 +76,14 @@ print("Random Forest Classifier: Using ",
 #  predict to get our predictions, we just need to attach ID's to
 #  attribute values before they get shuffled
 
-# Todo: add code that writes our predictions + prediction IDs to a .csv file
+# Prints predictions to predictions.csv file for Decison Tree
+# predictions = pd.DataFrame({'TransactionID': transaction_ids, 'isFraud': dt_prediction})
+# predictions.to_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/predictions.csv", index=False)
+
+# Prints predictions ot rf_predictions.csv file for Random Forest
+predictions_rf = pd.DataFrame({'TransactionID': transaction_ids, 'isFraud': rf_prediction})
+predictions_rf.to_csv("/home/gravy/Desktop/Machine_Learning/project1/p1_randomforests/data/rf_predicitons.csv", index=False)
+
 
 # # This section tries to save the tree running entropy
 # filename = 'train_model.sav'
