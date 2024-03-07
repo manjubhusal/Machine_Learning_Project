@@ -1,7 +1,40 @@
 from collections import Counter
 from scipy.stats import chi2
 from sklearn import metrics
+from sklearn.preprocessing import LabelEncoder
+from sklearn.impute import SimpleImputer
 import numpy as np
+
+
+def process_data(df, mode):
+    df.fillna(value=np.nan, inplace=True)
+    # n = len(df.columns) - 1  # Number of features
+    n = 26
+    selected_rows = df.iloc[:len(df)]
+
+    if mode == "train":
+        y = selected_rows.iloc[:, n].values  # Our classes
+    else:
+        y = None
+
+    trans_ID = selected_rows.iloc[:, 0]  # Select IDs
+    X_categorical = selected_rows.iloc[:, 1:10].values  # Select categorical features
+    X_numerical = selected_rows.iloc[:, 10:n].values  # Select numerical features
+
+    # Accounting for missing data
+    num_impute = SimpleImputer(strategy='mean')
+    X_num_imputed = num_impute.fit_transform(X_numerical)
+    cat_impute = SimpleImputer(strategy='most_frequent')
+    X_cat_imputed = cat_impute.fit_transform(X_categorical)
+
+    label_encoders = {}
+    for i, column in enumerate(X_cat_imputed.T):  # Transpose to iterate over columns
+        label_encoders[i] = LabelEncoder()
+        X_cat_imputed[:, i] = label_encoders[i].fit_transform(column)
+
+    X = np.concatenate((X_cat_imputed, X_num_imputed), axis=1)
+
+    return X, y, trans_ID
 
 
 def calc_balanced_accuracy(y_true, y_pred):

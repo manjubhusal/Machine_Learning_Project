@@ -8,7 +8,7 @@ class DecisionTree:
             self.value = value
             self.left = left
             self.right = right
-            self.feature = feature
+            self.feature_index = feature
             self.threshold = threshold
 
         def is_leaf(self):
@@ -65,18 +65,18 @@ class DecisionTree:
 
         # Extract the split threshold, and feature index using the max_gain_index
         node.threshold = results_array[max_gain_index, 1]
-        node.feature = int(results_array[max_gain_index, 2])  # Cast to int if necessary
+        node.feature_index = int(results_array[max_gain_index, 2])  # Cast to int if necessary
 
         # Check if further splitting should occur based on the chi-square test
-        if not should_split(X[:, node.feature], y):
+        if not should_split(X[:, node.feature_index], y):
             node.value = representative_class(y)
             self.current_depth -= 1
             return node
 
         # Split data into two groups (left and right) based on whether the data points
         # fall below or above a given threshold value for a selected feature.
-        left = np.where(X[:, node.feature] <= node.threshold)[0]
-        right = np.where(X[:, node.feature] > node.threshold)[0]
+        left = np.where(X[:, node.feature_index] <= node.threshold)[0]
+        right = np.where(X[:, node.feature_index] > node.threshold)[0]
 
         # Use left and right index groups to create children
         node.left = self.build_tree(X[left, :], y[left])
@@ -94,7 +94,6 @@ class DecisionTree:
     def predict(self, X):
         # Initialize an empty list to store the predictions
         predictions = []
-
         # Loop through each item in X
         for x in X:
             # Traverse the tree starting from the root for each item
@@ -112,7 +111,7 @@ class DecisionTree:
             return node.value
         # Recursive case: traverse the tree based on the feature value of x
         else:
-            if x[node.feature] <= node.threshold:
+            if x[node.feature_index] <= node.threshold:
                 return self.classify(x, node.left)
             else:
                 return self.classify(x, node.right)
