@@ -30,17 +30,17 @@ X_test, y_empty, test_trans_ID = process_data(df_test, "test")  # y_test is empt
 impurity_type = 'entropy'
 
 # # Decision Tree Classifier
-# dt_model = DecisionTree(X_train, y_train, ig_type=impurity_type,
-#                         node_split_min=10, max_depth=45, num_features=5)  # TRAIN
-# dt_prediction = dt_model.predict(X_test)  # PREDICT
-# accuracy = calc_balanced_accuracy(y_validation, dt_prediction)  # MEASURE ACCURACY
-# print("Decision Tree Classifier: Using ",
-#       impurity_type, " our balanced accuracy is: ", accuracy)
+dt_model = DecisionTree(X_train, y_train, ig_type=impurity_type,
+                        node_split_min=10, max_depth=45, num_features=5)  # TRAIN
+dt_prediction = dt_model.predict(X_train)  # PREDICT
+accuracy = calc_balanced_accuracy(y_validation, dt_prediction)  # MEASURE ACCURACY
+print("Decision Tree Classifier: Using ",
+      impurity_type, " our balanced accuracy is: ", accuracy)
 
 # # Random Forests Classifier
-random_forest = RandomForest(ig_type=impurity_type, node_split_min=10,
-                             max_depth=45, num_features=5, num_trees=1)
-rf_prediction = random_forest.build_classifier(X_train, y_train, X_test)
+# random_forest = RandomForest(ig_type=impurity_type, node_split_min=10,
+#                              max_depth=45, num_features=5, num_trees=1)
+# rf_prediction = random_forest.build_classifier(X_train, y_train, X_test)
 # accuracy = calc_balanced_accuracy(y_validation, rf_prediction)  # MEASURE ACCURACY
 # print("Random Forest Classifier: Using ",
 #       impurity_type, " our balanced accuracy is: ", accuracy)
@@ -48,10 +48,10 @@ rf_prediction = random_forest.build_classifier(X_train, y_train, X_test)
 # # Code for adding trans_ID to predictions
 
 # Prints predictions to rf_predictions.csv file for Random Forest
-predictions_rf = pd.DataFrame({'TransactionID': test_trans_ID, 'isFraud': rf_prediction})
-# predictions_rf.to_csv("/home/gravy/Desktop/Machine_Learning/project1/"
-#                       "p1_randomforests/data/rf_predicitons.csv", index=False)
-predictions_rf.to_csv("C:/Users/Ester/Desktop/rf_predictions/rf_pred.csv", index=False)
+# predictions_rf = pd.DataFrame({'TransactionID': test_trans_ID, 'isFraud': rf_prediction})
+# # predictions_rf.to_csv("/home/gravy/Desktop/Machine_Learning/project1/"
+# #                       "p1_randomforests/data/rf_predicitons.csv", index=False)
+# predictions_rf.to_csv("C:/Users/Ester/Desktop/rf_predictions/rf_pred.csv", index=False)
 
 ##############################################################################
 # # Code for saving trees
