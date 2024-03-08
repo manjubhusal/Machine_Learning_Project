@@ -16,7 +16,12 @@ follow these guidelines otherwise you will get a **ValueError**:
 - num_features must be an int in the range [1 - 20]
 - num_trees must be an int in the range [1 - 50] 
 ***(set to 1 if model_type=decision_tree)*** 
-
+3. Make sure to *save* your changes to the config file, once you've
+done this, you only need to run the main.py file as normal and the
+program will tell you what action you are running early on and
+once the program finishes it will print out a program run report
+to the terminal which will verify the config settings you ran
+the program runtime, and if applicable, it will output accuracy.
 ***
 ## File Manifest
 Describe each file in our program with one sentence.
