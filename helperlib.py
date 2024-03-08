@@ -7,17 +7,20 @@ import numpy as np
 import yaml
 
 
-def print_run_report(config, accuracy):
+def print_run_report(config, accuracy, run_ID):
     # Header
-    print("Program Run Report\n" + "=" * 15)
+    print("Program Run Report\n" + "=" * 20)
     # Configurations
     print("Configuration Settings:")
     for key, value in config.items():
         print(f"  {key.replace('_', ' ').title()}: {value}")
     # Spacer
-    print("\n" + "-" * 15 + "\n")
+    print("-" * 20)
+    # Run ID
+    print("Run ID: ", str(run_ID))
     # Accuracy
     print("Accuracy: ", accuracy)
+    print("-" * 20 + "\n")
 
 
 def read_config(file_path):

@@ -1,3 +1,4 @@
+import random
 import time
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -8,6 +9,7 @@ from helperlib import *
 
 # Program Version 4.0
 def main():
+
     config = read_config("configuration_files/config1.yaml")
     df_train_val = pd.read_csv("data/input files/train.csv")
     df_test = pd.read_csv("data/input files/test.csv")
@@ -26,8 +28,17 @@ def main():
     X, y, train_trans_ID = process_data(df_train_val, "validate")
     X_train, X_validation, y_train, y_validation = (
         train_test_split(X, y, test_size=0.2, random_state=1234, stratify=y))
+
     # Needed for final report but obviously not calculated when action_type==test
     accuracy = None
+
+    # Unique ID to label each kaggle run - this allows us uniquely label output
+    # files based on the run ID, so run #123 is kaggle123.csv. Because this doesn't
+    # store all of our IDs ever created, we may get duplicate IDs from past runs.
+    # All runs MUST be recorded on the spreadsheet where you will input run ID; if
+    # you get a run ID that's been used before, simply make note of this on the
+    # spreadsheet.
+    run_ID = random.randint(1, 10000)
 
     # Conditional logic based on configuration
     # TRAIN CLASSIFIER -> PREDICT -> WRITE OUTPUT TO CSV
@@ -38,12 +49,14 @@ def main():
             dt_model = DecisionTree(X_train, y_train, ig_type, alpha_level, min_sample_split, max_depth, num_features)
             test_dt_prediction = dt_model.predict(X_test)
             df_dt_pred = pd.DataFrame({'TransactionID': test_trans_ID, 'isFraud': test_dt_prediction})
-            df_dt_pred.to_csv("data/output files/dt_predictions.csv", index=False)
+            filename = f"data/output files/kaggle_{run_ID}.csv"
+            df_dt_pred.to_csv(filename, index=False)
         else:
             rt_model = RandomForest(ig_type, alpha_level, min_sample_split, max_depth, num_features, num_trees)
             test_rf_prediction = rt_model.build_classifier(X_train, y_train, X_test)
             df_rf_pred = pd.DataFrame({'TransactionID': test_trans_ID, 'isFraud': test_rf_prediction})
-            df_rf_pred.to_csv("data/output files/rf_predictions.csv", index=False)
+            filename = f"data/output files/kaggle_{run_ID}.csv"
+            df_rf_pred.to_csv(filename, index=False)
     # TRAIN CLASSIFIER -> PREDICT -> VALIDATE -> MEASURE ACCURACY
     elif action_type == "validate":
         print("Running in validate mode...\n")
@@ -58,7 +71,7 @@ def main():
     else:
         print("action_type error in main")
 
-    print_run_report(config, accuracy)
+    print_run_report(config, accuracy, run_ID)
 
 
 if __name__ == "__main__":
@@ -66,4 +79,4 @@ if __name__ == "__main__":
     main()
     time_end = time.time()
     time_elapsed = time_end - time_start
-    print("Total runtime (in seconds): ", time_elapsed)
+    print("Runtime (secs): ", time_elapsed)
