@@ -16,7 +16,11 @@ follow these guidelines otherwise you will get a **ValueError**:
 - num_features must be an int in the range [1 - 20]
 - num_trees must be an int in the range [1 - 50] 
 ***(set to 1 if model_type=decision_tree)*** 
-3. Make sure to *save* your changes to the config file, once you've
+3. **IMPORTANT!!**: to alternate between using the entire
+dataset and just a fraction of it, please manually change
+this portion of the code inside the *process_data* function
+in the *helperlib.py* file: `selected_rows = df.iloc[:len(df) // 70]`
+4. Make sure to *save* your changes to the config file, once you've
 done this, you only need to run the main.py file as normal and the
 program will tell you what action you are running early on and
 once the program finishes it will print out a program run report

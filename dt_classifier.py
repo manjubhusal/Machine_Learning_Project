@@ -4,10 +4,10 @@ from helperlib import *
 
 class DecisionTree:
     class Node:
-        def __init__(self, feature=None, threshold=None, left=None, right=None, value=None):
+        def __init__(self, right=None, left=None, feature=None, threshold=None, value=None):
             self.value = value
-            self.left = left
             self.right = right
+            self.left = left
             self.feature_index = feature
             self.threshold = threshold
 
@@ -55,7 +55,7 @@ class DecisionTree:
         # Find the optimal threshold for each feature in parallel
         results = Parallel(n_jobs=-1)(
             delayed(self.find_best_threshold)
-            (feature_index, X[:, feature_index], X, y) for feature_index in subset
+            (feature_index, X[:, feature_index], y) for feature_index in subset
         )
 
         # Convert list of tuples to an array for easy access
@@ -76,19 +76,20 @@ class DecisionTree:
 
         # Split data into two groups (left and right) based on whether the data points
         # fall below or above a given threshold value for a selected feature.
-        left = np.where(X[:, node.feature_index] <= node.threshold)[0]
         right = np.where(X[:, node.feature_index] > node.threshold)[0]
+        left = np.where(X[:, node.feature_index] <= node.threshold)[0]
 
         # Use left and right index groups to create children
-        node.left = self.build_tree(X[left, :], y[left])
         node.right = self.build_tree(X[right, :], y[right])
+        node.left = self.build_tree(X[left, :], y[left])
 
+        # decrement depth before returning
         self.current_depth -= 1
         return node
 
-    def find_best_threshold(self, feature_index, selected_feature, X, y):
+    def find_best_threshold(self, feature_index, selected_feature, y):
         thresholds = np.unique(selected_feature)
-        gains_thresholds = [(calc_info_gain(self.ig_type, X, y, selected_feature, i), i) for i in thresholds]
+        gains_thresholds = [(calc_info_gain(self.ig_type, y, selected_feature, i), i) for i in thresholds]
         best_gain, best_threshold = max(gains_thresholds)
         return best_gain, best_threshold, feature_index
 
@@ -99,7 +100,6 @@ class DecisionTree:
         for x in X:
             # Traverse the tree starting from the root for each item
             # and append the result to the predictions list
-            # prediction = depth_first_traversal(x, self.root)
             prediction = self.classify(x, self.root)
             predictions.append(prediction)
 

@@ -102,7 +102,6 @@ def calc_balanced_accuracy(y_true, y_pred):
     return balanced_accuracy
 
 
-# todo: JACOB -> go over all of info gain helper functions
 def calc_gini(y):
     hist = np.bincount(y)
     ps = hist / len(y)
@@ -146,9 +145,9 @@ def should_split(attribute_values, class_labels, alpha_level):
         return True  # Continue splitting
 
 
-# todo: ESTER -> dramatically change this
-def calc_info_gain(impurity, X, y, selected_feature, threshold):
-    # Create children & calculate their weighted avg. impurity
+# todo: ESTER -> add comments to this
+def calc_info_gain(impurity, y, selected_feature, threshold):
+
     left_idxs = np.where(selected_feature <= threshold)[0]
     right_idxs = np.where(selected_feature > threshold)[0]
 
