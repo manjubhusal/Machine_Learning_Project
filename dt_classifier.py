@@ -1,5 +1,5 @@
 from joblib import Parallel, delayed
-from helper_functions import *
+from helperlib import *
 
 
 class DecisionTree:
@@ -17,8 +17,9 @@ class DecisionTree:
             else:
                 return False
 
-    def __init__(self, X, y, ig_type, max_depth, node_split_min, num_features):
+    def __init__(self, X, y, ig_type, alpha_level, max_depth, node_split_min, num_features):
         self.ig_type = ig_type
+        self.alpha_level = alpha_level
         self.max_depth = max_depth
         self.node_split_min = node_split_min
         # make sure n_features is never set to be bigger than our actual number of features
@@ -68,7 +69,7 @@ class DecisionTree:
         node.feature_index = int(results_array[max_gain_index, 2])  # Cast to int if necessary
 
         # Check if further splitting should occur based on the chi-square test
-        if not should_split(X[:, node.feature_index], y):
+        if not should_split(X[:, node.feature_index], y, self.alpha_level):
             node.value = representative_class(y)
             self.current_depth -= 1
             return node

@@ -4,15 +4,66 @@ from sklearn import metrics
 from sklearn.preprocessing import LabelEncoder
 from sklearn.impute import SimpleImputer
 import numpy as np
+import yaml
+
+
+def print_run_report(config, accuracy):
+    # Header
+    print("Program Run Report\n" + "=" * 15)
+    # Configurations
+    print("Configuration Settings:")
+    for key, value in config.items():
+        print(f"  {key.replace('_', ' ').title()}: {value}")
+    # Spacer
+    print("\n" + "-" * 15 + "\n")
+    # Accuracy
+    print("Accuracy: ", accuracy)
+
+
+def read_config(file_path):
+    with open(file_path, 'r') as file:
+        config = yaml.safe_load(file)
+
+    # Validate config
+    valid_action_types = ["test", "validate"]
+    valid_model_types = ["decision_tree", "random_forest"]
+    valid_ig_types = ["entropy", "mis_error", "gini"]
+
+    action_type = config.get('action_type')
+    model_type = config.get('model_type')
+    ig_type = config.get('ig_type')
+    alpha_level = float(config.get('alpha_level'))
+    min_sample_split = config.get('min_sample_split')
+    max_depth = config.get('max_depth')
+    num_features = config.get('num_features')
+    num_trees = config.get('num_trees')
+
+    if action_type not in valid_action_types:
+        raise ValueError(f"Invalid action_type: {action_type}")
+    if model_type not in valid_model_types:
+        raise ValueError(f"Invalid model_type: {model_type}")
+    if ig_type not in valid_ig_types:
+        raise ValueError(f"Invalid ig_type: {ig_type}")
+    if not 0.01 <= alpha_level <= 0.9:
+        raise ValueError("alpha_level must be a float in the range [0.01 - 0.9]")
+    if not 2 <= min_sample_split <= 40:
+        raise ValueError("min_sample_split must be an int in the range [2 - 40]")
+    if not 1 <= max_depth <= 100:
+        raise ValueError("max_depth must be an int in the range [1 - 100]")
+    if not 1 <= num_features <= 20:
+        raise ValueError("num_features must be an int in the range [1 - 20]")
+    if not 1 <= num_trees <= 50:
+        raise ValueError("num_trees must be an int in the range [1 - 50]")
+
+    return config
 
 
 def process_data(df, mode):
-    df.fillna(value=np.nan, inplace=True)
     # n = len(df.columns) - 1  # Number of features
     n = 26
-    selected_rows = df.iloc[:len(df)]
+    selected_rows = df.iloc[:len(df) // 70]
 
-    if mode == "train":
+    if mode == "validate":
         y = selected_rows.iloc[:, n].values  # Our classes
     else:
         y = None
@@ -81,7 +132,7 @@ def chi_square(obs):
     return stat, p_val
 
 
-def should_split(attribute_values, class_labels):
+def should_split(attribute_values, class_labels, alpha_level):
     # Perform chi-square test
     attribute_values = np.array(attribute_values)
     class_labels = np.array(class_labels)
@@ -89,7 +140,7 @@ def should_split(attribute_values, class_labels):
     chi_2, p = chi_square(observed_freq)
 
     # Check if any attribute is significantly correlated with the class
-    if p.any() > 0.05:  # Adjust significance level as needed
+    if p.any() > alpha_level:  # Adjust significance level as needed
         return False  # Stop splitting
     else:
         return True  # Continue splitting
