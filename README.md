@@ -3,6 +3,19 @@
 Include steps on how to run the program for the 
 testers and where to specify path to the
 dataset.
+1. Make sure environment is appropriately set up. (incomplete)
+2. In **configuration_files** directory, adjust parameters to
+desired setting in config1.yaml file. The values you chose must 
+follow these guidelines otherwise you will get a **ValueError**:
+- action_type must be one of the following: ["test", "validate"]
+- model_type must be one of the following: ["decision_tree", "random_forest"]
+- ig_type must be one of the following: ["entropy", "mis_error", "gini"]
+- alpha_level must be a float in the range [0.01 - 0.9]
+- min_sample_split must be an int in the range [2 - 40]
+- max_depth must be an int in the range [1 - 100]
+- num_features must be an int in the range [1 - 20]
+- num_trees must be an int in the range [1 - 50] 
+***(set to 1 if model_type=decision_tree)*** 
 
 ***
 ## File Manifest

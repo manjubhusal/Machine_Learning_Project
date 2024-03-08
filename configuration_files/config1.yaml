@@ -1,0 +1,8 @@
+action_type: "test"
+model_type: "random_forest"
+ig_type: "entropy"
+alpha_level: "0.01"
+min_sample_split: 5
+max_depth: 45
+num_features: 10
+num_trees: 1
