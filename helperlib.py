@@ -64,7 +64,7 @@ def read_config(file_path):
 def process_data(df, mode):
     # n = len(df.columns) - 1  # Number of features
     n = 26
-    selected_rows = df.iloc[:len(df) // 70]
+    selected_rows = df.iloc[:len(df)]
 
     if mode == "validate":
         y = selected_rows.iloc[:, n].values  # Our classes

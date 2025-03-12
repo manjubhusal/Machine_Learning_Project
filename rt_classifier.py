@@ -24,7 +24,7 @@ class RandomForest:
             # Below, I have removed random_state = 42 as a parameter to aid in truly
             # randomizing my samples
             X_sample, y_sample = resample(X_train, y_train, replace=True,
-                                          n_samples=len(X_train))
+                                          n_samples=len(X_train), random_state=42)
             # 2. Use samples to create n Decision Trees
             dt_model = DecisionTree(X_sample, y_sample, self.ig_type, self.alpha_level,
                                     self.node_split_min, self.max_depth, self.num_features)
@@ -43,10 +43,11 @@ class RandomForest:
     @staticmethod
     def majority_prediction(all_predictions):
         # Transpose the list of lists to get a list of predictions for each data point
-        predictions_transposed = list(zip(*all_predictions))
+        # predictions_transposed = list(zip(*all_predictions))
+        flattened_predictions = [tuple(prediction) for prediction in all_predictions]
         # Calculate mode (majority vote) for each data point
-        majority_votes = [mode(predictions) for predictions in predictions_transposed]
-        return majority_votes
+        majority_vote = mode(flattened_predictions)
+        return majority_vote
 
     # @staticmethod
     # def majority_prediction(all_predictions):
